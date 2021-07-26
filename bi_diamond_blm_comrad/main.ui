@@ -1,0 +1,771 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1000</width>
+    <height>760</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="108,0,100,100">
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QComboBox" name="comboBox_DeviceSelection">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <italic>false</italic>
+         <bold>true</bold>
+         <underline>false</underline>
+         <strikeout>false</strikeout>
+         <kerning>true</kerning>
+        </font>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::LeftToRight</enum>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="editable">
+        <bool>false</bool>
+       </property>
+       <property name="currentText">
+        <string notr="true"/>
+       </property>
+       <property name="sizeAdjustPolicy">
+        <enum>QComboBox::AdjustToContents</enum>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>16</height>
+        </size>
+       </property>
+       <property name="duplicatesEnabled">
+        <bool>false</bool>
+       </property>
+       <property name="frame">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QToolButton" name="toolButton">
+       <property name="text">
+        <string>Settings</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>../icons/settings.png</normaloff>../icons/settings.png</iconset>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QTabWidget" name="tabWidget">
+       <property name="styleSheet">
+        <string notr="true">QTabWidget::tab-bar {
+    alignment: center;
+}</string>
+       </property>
+       <property name="currentIndex">
+        <number>5</number>
+       </property>
+       <property name="tabBarAutoHide">
+        <bool>false</bool>
+       </property>
+       <widget class="QWidget" name="AcqHistogramTab">
+        <attribute name="title">
+         <string>AcqHistogram</string>
+        </attribute>
+       </widget>
+       <widget class="QWidget" name="AcqIntegralTab">
+        <attribute name="title">
+         <string>AcqIntegral</string>
+        </attribute>
+       </widget>
+       <widget class="QWidget" name="AcqIntegralDistTab">
+        <attribute name="title">
+         <string>AcqIntegralDist</string>
+        </attribute>
+       </widget>
+       <widget class="QWidget" name="AcqRawDistTab">
+        <attribute name="title">
+         <string>AcqRawDist</string>
+        </attribute>
+       </widget>
+       <widget class="QWidget" name="AcqTurnLossTab">
+        <attribute name="title">
+         <string>AcqTurnLoss</string>
+        </attribute>
+       </widget>
+       <widget class="QWidget" name="CaptureTab">
+        <property name="styleSheet">
+         <string notr="true"/>
+        </property>
+        <attribute name="title">
+         <string>Capture</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <item>
+          <widget class="CContextFrame" name="CContextFrame_CaptureTab">
+           <property name="frameShape">
+            <enum>QFrame::NoFrame</enum>
+           </property>
+           <property name="selector" stdset="0">
+            <string notr="true"/>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_2">
+            <item>
+             <widget class="CStaticPlot" name="CStaticPlot_Capture_rawBuf0">
+              <property name="styleSheet">
+               <string notr="true"/>
+              </property>
+              <property name="backgroundBrush">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>0</red>
+                 <green>0</green>
+                 <blue>0</blue>
+                </color>
+               </brush>
+              </property>
+              <property name="foregroundBrush">
+               <brush brushstyle="NoBrush">
+                <color alpha="255">
+                 <red>0</red>
+                 <green>0</green>
+                 <blue>0</blue>
+                </color>
+               </brush>
+              </property>
+              <property name="interactive">
+               <bool>true</bool>
+              </property>
+              <property name="renderHints">
+               <set>QPainter::TextAntialiasing</set>
+              </property>
+              <property name="dragMode">
+               <enum>QGraphicsView::NoDrag</enum>
+              </property>
+              <property name="cacheMode">
+               <set>QGraphicsView::CacheBackground</set>
+              </property>
+              <property name="transformationAnchor">
+               <enum>QGraphicsView::NoAnchor</enum>
+              </property>
+              <property name="plotTitle" stdset="0">
+               <string notr="true">rawBuf0</string>
+              </property>
+              <property name="gridOrientation" stdset="0">
+               <enum>StaticPlotWidget::Both</enum>
+              </property>
+              <property name="showLegend" stdset="0">
+               <bool>false</bool>
+              </property>
+              <property name="layerIDs" stdset="0">
+               <stringlist/>
+              </property>
+              <property name="axisLabels" stdset="0">
+               <string>{&quot;left&quot;: &quot;&quot;, &quot;top&quot;: &quot;time&quot;, &quot;bottom&quot;: &quot;time&quot;, &quot;right&quot;: &quot;&quot;}</string>
+              </property>
+              <property name="axisRanges" stdset="0">
+               <string>{&quot;x&quot;: &quot;auto&quot;, &quot;y&quot;: &quot;auto&quot;}</string>
+              </property>
+              <property name="replaceDataItemPenColor" stdset="0">
+               <color>
+                <red>255</red>
+                <green>255</green>
+                <blue>255</blue>
+               </color>
+              </property>
+              <property name="replaceDataItemPenWidth" stdset="0">
+               <number>1</number>
+              </property>
+              <property name="replaceDataItemSymbol" stdset="0">
+               <enum>StaticPlotWidget::NoSymbol</enum>
+              </property>
+              <property name="curves" stdset="0">
+               <stringlist>
+                <string>{&quot;channel&quot;: &quot;SP.BA1.BLMDIAMOND.2/Capture#rawBuf0&quot;, &quot;style&quot;: &quot;Line Graph&quot;, &quot;layer&quot;: &quot;&quot;, &quot;name&quot;: &quot;rawBuf0&quot;, &quot;color&quot;: &quot;#c994c7&quot;, &quot;line_style&quot;: 1, &quot;line_width&quot;: 1, &quot;symbol&quot;: null, &quot;symbol_size&quot;: 10}</string>
+               </stringlist>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="CStaticPlot" name="CStaticPlot_Capture_rawBuf1">
+              <property name="plotTitle" stdset="0">
+               <string notr="true">rawBuf1</string>
+              </property>
+              <property name="defaultYAxisSide" stdset="0">
+               <enum>StaticPlotWidget::Left</enum>
+              </property>
+              <property name="gridOrientation" stdset="0">
+               <enum>StaticPlotWidget::Both</enum>
+              </property>
+              <property name="layerIDs" stdset="0">
+               <stringlist/>
+              </property>
+              <property name="axisLabels" stdset="0">
+               <string>{&quot;left&quot;: &quot;&quot;, &quot;top&quot;: &quot;time&quot;, &quot;bottom&quot;: &quot;time&quot;, &quot;right&quot;: &quot;&quot;}</string>
+              </property>
+              <property name="axisRanges" stdset="0">
+               <string>{&quot;x&quot;: &quot;auto&quot;, &quot;y&quot;: &quot;auto&quot;}</string>
+              </property>
+              <property name="curves" stdset="0">
+               <stringlist>
+                <string>{&quot;channel&quot;: &quot;SP.BA1.BLMDIAMOND.2/Capture#rawBuf1&quot;, &quot;style&quot;: &quot;Line Graph&quot;, &quot;layer&quot;: &quot;&quot;, &quot;name&quot;: &quot;rawBuf1&quot;, &quot;color&quot;: &quot;#c994c7&quot;, &quot;line_style&quot;: 1, &quot;line_width&quot;: 1, &quot;symbol&quot;: null, &quot;symbol_size&quot;: 10}</string>
+               </stringlist>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="GeneralInformationTab">
+        <attribute name="title">
+         <string>GeneralInformation</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="CContextFrame" name="CContextFrame_GeneralInformationTab">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="inheritSelector" stdset="0">
+            <bool>false</bool>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_5">
+            <item>
+             <spacer name="verticalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>66</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QWidget" name="widget" native="true">
+              <property name="styleSheet">
+               <string notr="true">QWidget.CLabel{
+	border: 2px solid black;
+}
+
+QWidget.QLabel{
+	border: 2px solid black;
+}</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_2">
+               <property name="leftMargin">
+                <number>200</number>
+               </property>
+               <property name="topMargin">
+                <number>50</number>
+               </property>
+               <property name="rightMargin">
+                <number>200</number>
+               </property>
+               <property name="bottomMargin">
+                <number>50</number>
+               </property>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_17">
+                 <property name="text">
+                  <string>AcqStamp</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_3">
+                 <property name="text">
+                  <string>BeamMomentum</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="15" column="0">
+                <widget class="QLabel" name="label_12">
+                 <property name="text">
+                  <string>TurnDropped</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="1">
+                <widget class="CLabel" name="CLabel_GeneralInformation_BstShift">
+                 <property name="text">
+                  <string>Null</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                 <property name="channel" stdset="0">
+                  <string notr="true">SP.BA1.BLMDIAMOND.2/GeneralInformation#BstShift</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0">
+                <widget class="QLabel" name="label_6">
+                 <property name="text">
+                  <string>BunchSample</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="13" column="1">
+                <widget class="CLabel" name="CLabel_GeneralInformation_MonitorNames">
+                 <property name="text">
+                  <string>Null</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                 <property name="channel" stdset="0">
+                  <string notr="true">SP.BA1.BLMDIAMOND.2/GeneralInformation#monitorNames</string>
+                 </property>
+                 <property name="valueTransformation">
+                  <string notr="true"># init final_string
+final_string = &quot;&quot;
+
+# remove duplicated monitor names
+new_val = list(dict.fromkeys(new_val))
+
+# arrange the string with commas
+for i in range(0, len(new_val)):
+    string  = new_val[i]
+    if i &gt; 0:
+        final_string = final_string + &quot;, &quot; + string
+    else:
+        final_string = string
+
+# output the final_string
+output(str(final_string))
+    </string>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="1">
+                <widget class="CLabel" name="CLabel_GeneralInformation_FpgaCompilation">
+                 <property name="text">
+                  <string>Null</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                 <property name="channel" stdset="0">
+                  <string notr="true">SP.BA1.BLMDIAMOND.2/GeneralInformation#FpgaCompilation</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="12" column="0">
+                <widget class="QLabel" name="label_10">
+                 <property name="text">
+                  <string>MachineId</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="0">
+                <widget class="QLabel" name="label_16">
+                 <property name="text">
+                  <string>CycleStamp</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="13" column="0">
+                <widget class="QLabel" name="label_14">
+                 <property name="text">
+                  <string>MonitorNames</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="1">
+                <widget class="CLabel" name="CLabel_GeneralInformation_CycleName">
+                 <property name="text">
+                  <string>Null</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                 <property name="channel" stdset="0">
+                  <string notr="true">SP.BA1.BLMDIAMOND.2/GeneralInformation#cycleName</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="10" column="1">
+                <widget class="CLabel" name="CLabel_GeneralInformation_FpgaFirmware">
+                 <property name="text">
+                  <string>Null</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                 <property name="channel" stdset="0">
+                  <string notr="true">SP.BA1.BLMDIAMOND.2/GeneralInformation#FpgaFirmware</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="1">
+                <widget class="CLabel" name="CLabel_GeneralInformation_BoardId">
+                 <property name="text">
+                  <string>Null</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                 <property name="channel" stdset="0">
+                  <string notr="true">SP.BA1.BLMDIAMOND.2/GeneralInformation#BoardId</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="1">
+                <widget class="CLabel" name="CLabel_GeneralInformation_CycleStamp">
+                 <property name="text">
+                  <string>Null</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                 <property name="channel" stdset="0">
+                  <string notr="true">SP.BA1.BLMDIAMOND.2/GeneralInformation#cycleStamp</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="0">
+                <widget class="QLabel" name="label_5">
+                 <property name="text">
+                  <string>BstShift</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="11" column="0">
+                <widget class="QLabel" name="label_9">
+                 <property name="text">
+                  <string>FpgaStatus</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="10" column="0">
+                <widget class="QLabel" name="label_8">
+                 <property name="text">
+                  <string>FpgaFirmware</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="14" column="1">
+                <widget class="CLabel" name="CLabel_GeneralInformation_TurnBc">
+                 <property name="text">
+                  <string>Null</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                 <property name="channel" stdset="0">
+                  <string notr="true">SP.BA1.BLMDIAMOND.2/GeneralInformation#TurnBc</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1">
+                <widget class="CLabel" name="CLabel_GeneralInformation_BeamMomentum">
+                 <property name="text">
+                  <string>Null</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                 <property name="channel" stdset="0">
+                  <string notr="true">SP.BA1.BLMDIAMOND.2/GeneralInformation#BeamMomentum</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="1">
+                <widget class="CLabel" name="CLabel_GeneralInformation_BunchSample">
+                 <property name="text">
+                  <string>Null</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                 <property name="channel" stdset="0">
+                  <string notr="true">SP.BA1.BLMDIAMOND.2/GeneralInformation#BunchSample</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="12" column="1">
+                <widget class="CLabel" name="CLabel_GeneralInformation_MachineId">
+                 <property name="text">
+                  <string>Null</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                 <property name="channel" stdset="0">
+                  <string notr="true">SP.BA1.BLMDIAMOND.2/GeneralInformation#MachineId</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="CLabel" name="CLabel_GeneralInformation_AcqStamp">
+                 <property name="text">
+                  <string>Null</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                 <property name="channel" stdset="0">
+                  <string notr="true">SP.BA1.BLMDIAMOND.2/GeneralInformation#acqStamp</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="14" column="0">
+                <widget class="QLabel" name="label_11">
+                 <property name="text">
+                  <string>TurnBc</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="15" column="1">
+                <widget class="CLabel" name="CLabel_GeneralInformation_TurnDropped">
+                 <property name="text">
+                  <string>Null</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                 <property name="channel" stdset="0">
+                  <string notr="true">SP.BA1.BLMDIAMOND.2/GeneralInformation#TurnDropped</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_4">
+                 <property name="text">
+                  <string>BoardId</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="11" column="1">
+                <widget class="CLabel" name="CLabel_GeneralInformation_FpgaStatus">
+                 <property name="text">
+                  <string>Null</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                 <property name="channel" stdset="0">
+                  <string notr="true">SP.BA1.BLMDIAMOND.2/GeneralInformation#FpgaStatus</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="0">
+                <widget class="QLabel" name="label_15">
+                 <property name="text">
+                  <string>CycleName</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="16" column="1">
+                <widget class="CLabel" name="CLabel_GeneralInformation_TurnSample">
+                 <property name="text">
+                  <string>Null</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                 <property name="channel" stdset="0">
+                  <string notr="true">SP.BA1.BLMDIAMOND.2/GeneralInformation#TurnSample</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="0">
+                <widget class="QLabel" name="label_7">
+                 <property name="text">
+                  <string>FpgaCompilation</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="16" column="0">
+                <widget class="QLabel" name="label_13">
+                 <property name="text">
+                  <string>TurnSample</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_2">
+                 <property name="text">
+                  <string>AutoGain</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="CLabel" name="CLabel_GeneralInformation_AutoGain">
+                 <property name="text">
+                  <string>Null</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                 <property name="channel" stdset="0">
+                  <string notr="true">SP.BA1.BLMDIAMOND.2/GeneralInformation#AutoGain</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>PyDMLabel</class>
+   <extends>QLabel</extends>
+   <header>pydm.widgets.label</header>
+  </customwidget>
+  <customwidget>
+   <class>StaticPlotWidget</class>
+   <extends>QGraphicsView</extends>
+   <header>accwidgets.graph</header>
+  </customwidget>
+  <customwidget>
+   <class>CContextFrame</class>
+   <extends>QFrame</extends>
+   <header>comrad.widgets.containers</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CLabel</class>
+   <extends>PyDMLabel</extends>
+   <header>comrad.widgets.indicators</header>
+  </customwidget>
+  <customwidget>
+   <class>CStaticPlot</class>
+   <extends>StaticPlotWidget</extends>
+   <header>comrad.widgets.graphs</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
