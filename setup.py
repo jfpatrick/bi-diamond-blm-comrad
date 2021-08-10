@@ -7,7 +7,22 @@ https://packaging.python.org/guides/distributing-packages-using-setuptools/
 """
 from pathlib import Path
 from setuptools import setup, find_packages
+import os
+import ast
 
+def get_version_from_init():
+    init_file = os.path.join(
+        os.path.join(
+            os.path.dirname(__file__), "bi_diamond_blm_comrad", "__init__.py"
+        )
+    )
+    with open(init_file, "r") as fd:
+        for line in fd:
+            if line.startswith("__version__"):
+                return ast.literal_eval(line.split("=", 1)[1].strip())
+
+
+VERSION = get_version_from_init()
 
 HERE = Path(__file__).parent.absolute()
 with (HERE / 'README.md').open('rt') as fh:
@@ -34,8 +49,7 @@ REQUIREMENTS: dict = {
 
 setup(
     name='bi-diamond-blm-comrad',
-    version="0.0.1.dev0",
-
+    version=VERSION,
     author='martinja',
     author_email='javier.martinez.samblas@cern.ch',
     description='ComRAD project for the GUIs of the BI-DIAMOND-BLM devices.',

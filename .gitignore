@@ -1,1 +1,3 @@
 venv/*
+bi_diamond_blm_comrad/__pycache__/*
+bi_diamond_blm_comrad/.idea/*
