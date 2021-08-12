@@ -15,10 +15,10 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="CContextFrame" name="CContextFrame_CaptureTab_rawBuf0">
+    <widget class="CContextFrame" name="CContextFrame_CaptureTab_rawBuf1">
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="CStaticPlot" name="CStaticPlot_Capture_rawBuf0">
+       <widget class="CStaticPlot" name="CStaticPlot_Capture_rawBuf1">
         <property name="minimumSize">
          <size>
           <width>500</width>
@@ -62,7 +62,7 @@
          <enum>QGraphicsView::NoAnchor</enum>
         </property>
         <property name="plotTitle" stdset="0">
-         <string notr="true">rawBuf0</string>
+         <string notr="true">rawBuf1</string>
         </property>
         <property name="gridOrientation" stdset="0">
          <enum>StaticPlotWidget::Both</enum>
@@ -74,7 +74,7 @@
          <stringlist/>
         </property>
         <property name="axisLabels" stdset="0">
-         <string>{&quot;right&quot;: &quot;amplitude&quot;, &quot;bottom&quot;: &quot;time (microseconds)&quot;, &quot;top&quot;: &quot;time (microseconds)&quot;, &quot;left&quot;: &quot;amplitude&quot;}</string>
+         <string>{&quot;left&quot;: &quot;amplitude&quot;, &quot;right&quot;: &quot;amplitude&quot;, &quot;bottom&quot;: &quot;time (microseconds)&quot;, &quot;top&quot;: &quot;time (microseconds)&quot;}</string>
         </property>
         <property name="axisRanges" stdset="0">
          <string>{&quot;x&quot;: &quot;auto&quot;, &quot;y&quot;: &quot;auto&quot;}</string>

@@ -10,7 +10,7 @@
 # COMRAD AND PYQT IMPORTS
 
 from comrad import (CDisplay, PyDMChannelDataSource, CurveData, PointData, PlottingItemData, TimestampMarkerData, TimestampMarkerCollectionData, UpdateSource)
-from PyQt5.QtGui import (QIcon, QColor, QGuiApplication)
+from PyQt5.QtGui import (QIcon, QColor, QGuiApplication, QCursor)
 from PyQt5.QtCore import (QSize, Qt)
 import connection_custom
 
@@ -47,8 +47,9 @@ class MyDisplay(CDisplay):
         # sort the device-list alphabetically
         self.diamond_blm_device_list.sort()
 
-        print("Loading UI file...")
+        print("Loading main GUI file...")
         super().__init__(*args, **kwargs)
+        self.setWindowTitle("BLM DIAMOND GUI")
 
         print("Setting initial selector...")
         self.current_selector = "SPS.USER.ALL"
@@ -62,6 +63,8 @@ class MyDisplay(CDisplay):
         self.pydm_channel_capture_rawbuffer_0_timestamps_six = PyDMChannelDataSource(channel_address="rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.diamond_blm_device_list[0] + "/" + "bufferFFT#rawBuffer0_timestamps_six", data_type_to_emit=TimestampMarkerCollectionData, parent=self.CStaticPlot_Capture_rawBuf0)
         self.pydm_channel_capture_rawbuffer_1_timestamps_five = PyDMChannelDataSource(channel_address="rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.diamond_blm_device_list[0] + "/" + "bufferFFT#rawBuffer1_timestamps_five", data_type_to_emit=TimestampMarkerCollectionData, parent=self.CStaticPlot_Capture_rawBuf0)
         self.pydm_channel_capture_rawbuffer_1_timestamps_six = PyDMChannelDataSource(channel_address="rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.diamond_blm_device_list[0] + "/" + "bufferFFT#rawBuffer1_timestamps_six", data_type_to_emit=TimestampMarkerCollectionData, parent=self.CStaticPlot_Capture_rawBuf0)
+        self.pydm_channel_capture_rawbuffer_0_FFT_xplots_overtones = PyDMChannelDataSource(channel_address="rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.diamond_blm_device_list[0] + "/" + "bufferFFT#peaks_freq0_xplots", data_type_to_emit=CurveData, parent=self.CStaticPlot_Capture_rawBuf0_FFT)
+        self.pydm_channel_capture_rawbuffer_1_FFT_xplots_overtones = PyDMChannelDataSource(channel_address="rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.diamond_blm_device_list[0] + "/" + "bufferFFT#peaks_freq1_xplots", data_type_to_emit=CurveData, parent=self.CStaticPlot_Capture_rawBuf1_FFT)
 
         # transform timestamps from str to float
         self.pydm_channel_capture_rawbuffer_0_timestamps_five._transform = connection_custom.PlottingItemDataFactory._to_ts_marker_collection
@@ -105,6 +108,12 @@ class MyDisplay(CDisplay):
             self.comboBox_DeviceSelection.setItemIcon(index, icon_green_tick)
             self.comboBox_DeviceSelection.setIconSize(QSize(32, 16))
 
+        # change cursors of CRelatedDisplayButton to normal ArrowCursor
+        self.CRelatedDisplayButton_rawBuf0.setCursor(QCursor(Qt.ArrowCursor))
+        self.CRelatedDisplayButton_rawBuf0_FFT.setCursor(QCursor(Qt.ArrowCursor))
+        self.CRelatedDisplayButton_rawBuf1.setCursor(QCursor(Qt.ArrowCursor))
+        self.CRelatedDisplayButton_rawBuf1_FFT.setCursor(QCursor(Qt.ArrowCursor))
+
     #----------------------------------------------#
 
     # function that initializes signal-slot dependencies
@@ -147,9 +156,7 @@ class MyDisplay(CDisplay):
         self.CContextFrame_CaptureTab_rawBuf0.inheritSelector = False
         self.CContextFrame_CaptureTab_rawBuf0.selector = ""
         self.CStaticPlot_Capture_rawBuf0.clear_items()
-        self.CStaticPlot_Capture_rawBuf0.addCurve(data_source = self.pydm_channel_capture_rawbuffer_0)
-        #self.CStaticPlot_Capture_rawBuf0.addTimestampMarker(data_source = "rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.diamond_blm_device_list[0] + "/" + "bufferFFT#rawBuffer0_timestamps_five")
-        #self.CStaticPlot_Capture_rawBuf0.addTimestampMarker(data_source="rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.diamond_blm_device_list[0] + "/" + "bufferFFT#rawBuffer0_timestamps_six")
+        self.CStaticPlot_Capture_rawBuf0.addCurve(data_source = self.pydm_channel_capture_rawbuffer_0, color=QColor("#FFFFFF"))
         self.CStaticPlot_Capture_rawBuf0.addTimestampMarker(data_source = self.pydm_channel_capture_rawbuffer_0_timestamps_five)
         self.CStaticPlot_Capture_rawBuf0.addTimestampMarker(data_source = self.pydm_channel_capture_rawbuffer_0_timestamps_six)
         self.pydm_channel_capture_rawbuffer_0.context_changed()
@@ -160,9 +167,7 @@ class MyDisplay(CDisplay):
         self.CContextFrame_CaptureTab_rawBuf1.inheritSelector = False
         self.CContextFrame_CaptureTab_rawBuf1.selector = ""
         self.CStaticPlot_Capture_rawBuf1.clear_items()
-        self.CStaticPlot_Capture_rawBuf1.addCurve(data_source=self.pydm_channel_capture_rawbuffer_1)
-        #self.CStaticPlot_Capture_rawBuf1.addTimestampMarker(data_source="rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.diamond_blm_device_list[0] + "/" + "bufferFFT#rawBuffer1_timestamps_five")
-        #self.CStaticPlot_Capture_rawBuf1.addTimestampMarker(data_source="rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.diamond_blm_device_list[0] + "/" + "bufferFFT#rawBuffer1_timestamps_six")
+        self.CStaticPlot_Capture_rawBuf1.addCurve(data_source=self.pydm_channel_capture_rawbuffer_1, color=QColor("#FFFFFF"))
         self.CStaticPlot_Capture_rawBuf1.addTimestampMarker(data_source = self.pydm_channel_capture_rawbuffer_1_timestamps_five)
         self.CStaticPlot_Capture_rawBuf1.addTimestampMarker(data_source = self.pydm_channel_capture_rawbuffer_1_timestamps_six)
         self.pydm_channel_capture_rawbuffer_1.context_changed()
@@ -173,19 +178,19 @@ class MyDisplay(CDisplay):
         self.CContextFrame_CaptureTab_rawBuf0_FFT.inheritSelector = False
         self.CContextFrame_CaptureTab_rawBuf0_FFT.selector = ""
         self.CStaticPlot_Capture_rawBuf0_FFT.clear_items()
-        self.CStaticPlot_Capture_rawBuf0_FFT.addCurve(data_source=self.pydm_channel_capture_rawbuffer_0_FFT)
-        self.CStaticPlot_Capture_rawBuf0_FFT.addCurve(data_source="rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.diamond_blm_device_list[0] + "/" + "bufferFFT#peaks_freq0_xplots", color=QColor('yellow'), line_style=Qt.NoPen, symbol="o", symbol_size=8)
-        #self.CStaticPlot_Capture_rawBuf1_FFT.addCurve(data_source=self.pydm_channel_capture_rawbuffer_1_FFT_xplots_overtones, color=QColor('yellow'), line_style=Qt.NoPen, symbol="o")
+        self.CStaticPlot_Capture_rawBuf0_FFT.addCurve(data_source=self.pydm_channel_capture_rawbuffer_0_FFT, color=QColor("#FFFFFF"))
+        self.CStaticPlot_Capture_rawBuf0_FFT.addCurve(data_source=self.pydm_channel_capture_rawbuffer_0_FFT_xplots_overtones, color=QColor('yellow'), line_style=Qt.NoPen, symbol="o", symbol_size=8)
         self.pydm_channel_capture_rawbuffer_0_FFT.context_changed()
+        self.pydm_channel_capture_rawbuffer_0_FFT_xplots_overtones.context_changed()
 
         # set channels for Capture tab rawBuffer1_FFT
         self.CContextFrame_CaptureTab_rawBuf1_FFT.inheritSelector = False
         self.CContextFrame_CaptureTab_rawBuf1_FFT.selector = ""
         self.CStaticPlot_Capture_rawBuf1_FFT.clear_items()
-        self.CStaticPlot_Capture_rawBuf1_FFT.addCurve(data_source=self.pydm_channel_capture_rawbuffer_1_FFT)
-        self.CStaticPlot_Capture_rawBuf1_FFT.addCurve(data_source="rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.diamond_blm_device_list[0] + "/" + "bufferFFT#peaks_freq1_xplots", color=QColor('yellow'), line_style=Qt.NoPen, symbol="o", symbol_size=8)
-        #self.CStaticPlot_Capture_rawBuf1_FFT.addCurve(data_source=self.pydm_channel_capture_rawbuffer_1_FFT_xplots_overtones, color=QColor('yellow'), line_style=Qt.NoPen, symbol="o")
+        self.CStaticPlot_Capture_rawBuf1_FFT.addCurve(data_source=self.pydm_channel_capture_rawbuffer_1_FFT, color=QColor("#FFFFFF"))
+        self.CStaticPlot_Capture_rawBuf1_FFT.addCurve(data_source=self.pydm_channel_capture_rawbuffer_1_FFT_xplots_overtones, color=QColor('yellow'), line_style=Qt.NoPen, symbol="o", symbol_size=8)
         self.pydm_channel_capture_rawbuffer_1_FFT.context_changed()
+        self.pydm_channel_capture_rawbuffer_1_FFT_xplots_overtones.context_changed()
 
         # set channels for CLabel overtones of rawbuf0
         self.CContextFrame_CaptureTab_Overtones_FFT0.inheritSelector = False

@@ -213,6 +213,11 @@
                     <iconset>
                      <normaloff>../icons/fullscreen.png</normaloff>../icons/fullscreen.png</iconset>
                    </property>
+                   <property name="filenames" stdset="0">
+                    <stringlist>
+                     <string>fullscreen_rawbuf1_fft.py</string>
+                    </stringlist>
+                   </property>
                    <property name="titles" stdset="0">
                     <stringlist>
                      <string>rawBuf1_FFT (Fullscreen)</string>
@@ -479,6 +484,11 @@ else:
                     <iconset>
                      <normaloff>../icons/fullscreen.png</normaloff>../icons/fullscreen.png</iconset>
                    </property>
+                   <property name="filenames" stdset="0">
+                    <stringlist>
+                     <string>fullscreen_rawbuf1.py</string>
+                    </stringlist>
+                   </property>
                    <property name="titles" stdset="0">
                     <stringlist>
                      <string>rawBuf1 (Fullscreen)</string>
@@ -553,6 +563,11 @@ else:
                    <property name="icon">
                     <iconset>
                      <normaloff>../icons/fullscreen.png</normaloff>../icons/fullscreen.png</iconset>
+                   </property>
+                   <property name="filenames" stdset="0">
+                    <stringlist>
+                     <string>fullscreen_rawbuf0_fft.py</string>
+                    </stringlist>
                    </property>
                    <property name="titles" stdset="0">
                     <stringlist>
