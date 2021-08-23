@@ -74,7 +74,7 @@
          <stringlist/>
         </property>
         <property name="axisLabels" stdset="0">
-         <string>{&quot;top&quot;: &quot;frequeny (kHz)&quot;, &quot;left&quot;: &quot;amplitude&quot;, &quot;right&quot;: &quot;amplitude&quot;, &quot;bottom&quot;: &quot;frequeny (kHz)&quot;}</string>
+         <string>{&quot;bottom&quot;: &quot;frequeny (kHz)&quot;, &quot;top&quot;: &quot;frequeny (kHz)&quot;, &quot;right&quot;: &quot;amplitude&quot;, &quot;left&quot;: &quot;amplitude&quot;}</string>
         </property>
         <property name="axisRanges" stdset="0">
          <string>{&quot;x&quot;: &quot;auto&quot;, &quot;y&quot;: &quot;auto&quot;}</string>
@@ -105,7 +105,7 @@
            <string notr="true"/>
           </property>
           <property name="text">
-           <string>peaks</string>
+           <string>Peaks</string>
           </property>
           <property name="checked">
            <bool>true</bool>

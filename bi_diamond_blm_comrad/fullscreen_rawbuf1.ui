@@ -74,7 +74,7 @@
          <stringlist/>
         </property>
         <property name="axisLabels" stdset="0">
-         <string>{&quot;left&quot;: &quot;amplitude&quot;, &quot;right&quot;: &quot;amplitude&quot;, &quot;bottom&quot;: &quot;time (microseconds)&quot;, &quot;top&quot;: &quot;time (microseconds)&quot;}</string>
+         <string>{&quot;bottom&quot;: &quot;time (microseconds)&quot;, &quot;top&quot;: &quot;time (microseconds)&quot;, &quot;right&quot;: &quot;amplitude&quot;, &quot;left&quot;: &quot;amplitude&quot;}</string>
         </property>
         <property name="axisRanges" stdset="0">
          <string>{&quot;x&quot;: &quot;auto&quot;, &quot;y&quot;: &quot;auto&quot;}</string>
@@ -100,25 +100,12 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <widget class="QCheckBox" name="checkBox_one">
+         <widget class="QCheckBox" name="checkBox_bunch">
           <property name="styleSheet">
-           <string notr="true">color: rgb(2, 85, 63);</string>
+           <string notr="true"/>
           </property>
           <property name="text">
-           <string>flag (1)</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="checkBox_two">
-          <property name="styleSheet">
-           <string notr="true">color: rgb(149, 44, 70);</string>
-          </property>
-          <property name="text">
-           <string>flag (2)</string>
+           <string>Bunch</string>
           </property>
           <property name="checked">
            <bool>true</bool>

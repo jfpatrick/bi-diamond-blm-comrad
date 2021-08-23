@@ -72,7 +72,7 @@ class MyDisplay(CDisplay):
 
         return
 
-    # ----------------------------------------------#
+    #----------------------------------------------#
 
     def updatePeaks(self, state):
 
@@ -98,7 +98,7 @@ class MyDisplay(CDisplay):
 
         return
 
-    # ----------------------------------------------#
+    #----------------------------------------------#
 
     # function that set the right channels for each widget depending on the selected device
     def setChannels(self):

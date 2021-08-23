@@ -195,7 +195,7 @@
                   <stringlist/>
                  </property>
                  <property name="axisLabels" stdset="0">
-                  <string>{&quot;right&quot;: &quot;amplitude&quot;, &quot;bottom&quot;: &quot;frequency (kHz)&quot;, &quot;top&quot;: &quot;frequency (kHz)&quot;, &quot;left&quot;: &quot;amplitude&quot;}</string>
+                  <string>{&quot;right&quot;: &quot;amplitude&quot;, &quot;left&quot;: &quot;amplitude&quot;, &quot;bottom&quot;: &quot;frequency (kHz)&quot;, &quot;top&quot;: &quot;frequency (kHz)&quot;}</string>
                  </property>
                  <property name="axisRanges" stdset="0">
                   <string>{&quot;x&quot;: &quot;auto&quot;, &quot;y&quot;: &quot;auto&quot;}</string>
@@ -204,6 +204,29 @@
                </item>
                <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_7">
+                 <item>
+                  <widget class="QCheckBox" name="checkBox_peaks_1">
+                   <property name="text">
+                    <string>Peaks</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_6">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
                  <item>
                   <widget class="CRelatedDisplayButton" name="CRelatedDisplayButton_rawBuf1_FFT">
                    <property name="text">
@@ -228,19 +251,6 @@
                    </property>
                   </widget>
                  </item>
-                 <item>
-                  <spacer name="horizontalSpacer_6">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
                 </layout>
                </item>
               </layout>
@@ -263,69 +273,26 @@ QWidget.QLabel{
 	border: 2px solid black;
 }</string>
                  </property>
-                 <layout class="QGridLayout" name="gridLayout_3" rowstretch="90,100,100,100,100,100" columnminimumwidth="90,90">
-                  <item row="3" column="0">
-                   <widget class="CLabel" name="CLabel_5">
+                 <layout class="QGridLayout" name="gridLayout_3" rowstretch="90,100,100,100,100,100,100,100">
+                  <item row="5" column="0">
+                   <widget class="CLabel" name="CLabel_27">
                     <property name="text">
-                     <string>3rd</string>
+                     <string>5th</string>
                     </property>
                     <property name="alignment">
                      <set>Qt::AlignCenter</set>
                     </property>
                    </widget>
                   </item>
-                  <item row="1" column="1">
-                   <widget class="CLabel" name="CLabel_Overtones0_1">
+                  <item row="6" column="0">
+                   <widget class="CLabel" name="CLabel">
+                    <property name="font">
+                     <font>
+                      <family>Sans Serif</family>
+                     </font>
+                    </property>
                     <property name="text">
-                     <string>Null</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignCenter</set>
-                    </property>
-                    <property name="valueTransformation">
-                     <string notr="true">if len(new_val) &gt;= 1:
-    output('{0:.2f} kHz'.format(new_val[0]))
-else:
-    output('-')</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="3" column="1">
-                   <widget class="CLabel" name="CLabel_Overtones0_3">
-                    <property name="text">
-                     <string>Null</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignCenter</set>
-                    </property>
-                    <property name="valueTransformation">
-                     <string notr="true">if len(new_val) &gt;= 3:
-    output('{0:.2f} kHz'.format(new_val[2]))
-else:
-    output('-')</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="4" column="1">
-                   <widget class="CLabel" name="CLabel_Overtones0_4">
-                    <property name="text">
-                     <string>Null</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignCenter</set>
-                    </property>
-                    <property name="valueTransformation">
-                     <string notr="true">if len(new_val) &gt;= 4:
-    output('{0:.2f} kHz'.format(new_val[3]))
-else:
-    output('-')</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="1">
-                   <widget class="QLabel" name="label_18">
-                    <property name="text">
-                     <string>Frequency</string>
+                     <string>6th</string>
                     </property>
                     <property name="alignment">
                      <set>Qt::AlignCenter</set>
@@ -342,56 +309,10 @@ else:
                     </property>
                    </widget>
                   </item>
-                  <item row="1" column="0">
-                   <widget class="CLabel" name="CLabel_2">
-                    <property name="text">
-                     <string>1st</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="2" column="1">
-                   <widget class="CLabel" name="CLabel_Overtones0_2">
-                    <property name="text">
-                     <string>Null</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignCenter</set>
-                    </property>
-                    <property name="valueTransformation">
-                     <string notr="true">if len(new_val) &gt;= 2:
-    output('{0:.2f} kHz'.format(new_val[1]))
-else:
-    output('-')</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="4" column="0">
-                   <widget class="CLabel" name="CLabel_25">
-                    <property name="text">
-                     <string>4th</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignCenter</set>
-                    </property>
-                   </widget>
-                  </item>
                   <item row="0" column="0">
                    <widget class="QLabel" name="label">
                     <property name="text">
                      <string>Overtones</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="5" column="0">
-                   <widget class="CLabel" name="CLabel_27">
-                    <property name="text">
-                     <string>5th</string>
                     </property>
                     <property name="alignment">
                      <set>Qt::AlignCenter</set>
@@ -414,24 +335,167 @@ else:
                     </property>
                    </widget>
                   </item>
+                  <item row="6" column="1">
+                   <widget class="CLabel" name="CLabel_Overtones0_6">
+                    <property name="text">
+                     <string>Null</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                    <property name="valueTransformation">
+                     <string notr="true">if len(new_val) &gt;= 6:
+    output('{0:.2f} kHz'.format(new_val[5]))
+else:
+    output('-')</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="1">
+                   <widget class="CLabel" name="CLabel_Overtones0_3">
+                    <property name="text">
+                     <string>Null</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                    <property name="valueTransformation">
+                     <string notr="true">if len(new_val) &gt;= 3:
+    output('{0:.2f} kHz'.format(new_val[2]))
+else:
+    output('-')</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="CLabel" name="CLabel_2">
+                    <property name="text">
+                     <string>1st</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="CLabel" name="CLabel_5">
+                    <property name="text">
+                     <string>3rd</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="0">
+                   <widget class="CLabel" name="CLabel_25">
+                    <property name="text">
+                     <string>4th</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="1">
+                   <widget class="CLabel" name="CLabel_Overtones0_4">
+                    <property name="text">
+                     <string>Null</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                    <property name="valueTransformation">
+                     <string notr="true">if len(new_val) &gt;= 4:
+    output('{0:.2f} kHz'.format(new_val[3]))
+else:
+    output('-')</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="7" column="0">
+                   <widget class="CLabel" name="CLabel_6">
+                    <property name="text">
+                     <string>7th</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="7" column="1">
+                   <widget class="CLabel" name="CLabel_Overtones0_7">
+                    <property name="text">
+                     <string>Null</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                    <property name="valueTransformation">
+                     <string notr="true">if len(new_val) &gt;= 7:
+    output('{0:.2f} kHz'.format(new_val[6]))
+else:
+    output('-')</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="CLabel" name="CLabel_Overtones0_2">
+                    <property name="text">
+                     <string>Null</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                    <property name="valueTransformation">
+                     <string notr="true">if len(new_val) &gt;= 2:
+    output('{0:.2f} kHz'.format(new_val[1]))
+else:
+    output('-')</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="CLabel" name="CLabel_Overtones0_1">
+                    <property name="text">
+                     <string>Null</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                    <property name="valueTransformation">
+                     <string notr="true">if len(new_val) &gt;= 1:
+    output('{0:.2f} kHz'.format(new_val[0]))
+else:
+    output('-')</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QLabel" name="label_18">
+                    <property name="text">
+                     <string>Frequency</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
                  </layout>
                 </widget>
                </item>
                <item>
-                <spacer name="verticalSpacer_3">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
+                <widget class="QPushButton" name="pushButton_invisible_0">
+                 <property name="enabled">
+                  <bool>false</bool>
                  </property>
-                 <property name="sizeType">
-                  <enum>QSizePolicy::Minimum</enum>
+                 <property name="styleSheet">
+                  <string notr="true"/>
                  </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>80</height>
-                  </size>
+                 <property name="text">
+                  <string>PushButton</string>
                  </property>
-                </spacer>
+                </widget>
                </item>
               </layout>
              </widget>
@@ -463,7 +527,7 @@ else:
                   <stringlist/>
                  </property>
                  <property name="axisLabels" stdset="0">
-                  <string>{&quot;right&quot;: &quot;amplitude&quot;, &quot;bottom&quot;: &quot;time (microseconds)&quot;, &quot;top&quot;: &quot;time (microseconds)&quot;, &quot;left&quot;: &quot;amplitude&quot;}</string>
+                  <string>{&quot;right&quot;: &quot;amplitude&quot;, &quot;left&quot;: &quot;amplitude&quot;, &quot;bottom&quot;: &quot;time (microseconds)&quot;, &quot;top&quot;: &quot;time (microseconds)&quot;}</string>
                  </property>
                  <property name="axisRanges" stdset="0">
                   <string>{&quot;x&quot;: &quot;auto&quot;, &quot;y&quot;: &quot;auto&quot;}</string>
@@ -475,6 +539,19 @@ else:
                </item>
                <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_4">
+                 <item>
+                  <spacer name="horizontalSpacer_4">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
                  <item>
                   <widget class="CRelatedDisplayButton" name="CRelatedDisplayButton_rawBuf1">
                    <property name="text">
@@ -499,19 +576,6 @@ else:
                    </property>
                   </widget>
                  </item>
-                 <item>
-                  <spacer name="horizontalSpacer_4">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
                 </layout>
                </item>
               </layout>
@@ -531,6 +595,11 @@ else:
                    <height>200</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>Sans Serif</family>
+                  </font>
+                 </property>
                  <property name="plotTitle" stdset="0">
                   <string>rawBuf0_FFT</string>
                  </property>
@@ -541,7 +610,7 @@ else:
                   <stringlist/>
                  </property>
                  <property name="axisLabels" stdset="0">
-                  <string>{&quot;right&quot;: &quot;amplitude&quot;, &quot;bottom&quot;: &quot;frequency (kHz)&quot;, &quot;top&quot;: &quot;frequency (kHz)&quot;, &quot;left&quot;: &quot;amplitude&quot;}</string>
+                  <string>{&quot;right&quot;: &quot;amplitude&quot;, &quot;left&quot;: &quot;amplitude&quot;, &quot;bottom&quot;: &quot;frequency (kHz)&quot;, &quot;top&quot;: &quot;frequency (kHz)&quot;}</string>
                  </property>
                  <property name="axisRanges" stdset="0">
                   <string>{&quot;x&quot;: &quot;auto&quot;, &quot;y&quot;: &quot;auto&quot;}</string>
@@ -555,6 +624,32 @@ else:
                </item>
                <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_5">
+                 <item>
+                  <widget class="QCheckBox" name="checkBox_peaks_0">
+                   <property name="styleSheet">
+                    <string notr="true"/>
+                   </property>
+                   <property name="text">
+                    <string>Peaks</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_5">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
                  <item>
                   <widget class="CRelatedDisplayButton" name="CRelatedDisplayButton_rawBuf0_FFT">
                    <property name="text">
@@ -578,19 +673,6 @@ else:
                     <bool>true</bool>
                    </property>
                   </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_5">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
                  </item>
                 </layout>
                </item>
@@ -660,7 +742,7 @@ else:
                   <stringlist/>
                  </property>
                  <property name="axisLabels" stdset="0">
-                  <string>{&quot;right&quot;: &quot;amplitude&quot;, &quot;bottom&quot;: &quot;time (microseconds)&quot;, &quot;top&quot;: &quot;time (microseconds)&quot;, &quot;left&quot;: &quot;amplitude&quot;}</string>
+                  <string>{&quot;right&quot;: &quot;amplitude&quot;, &quot;left&quot;: &quot;amplitude&quot;, &quot;bottom&quot;: &quot;time (microseconds)&quot;, &quot;top&quot;: &quot;time (microseconds)&quot;}</string>
                  </property>
                  <property name="axisRanges" stdset="0">
                   <string>{&quot;x&quot;: &quot;auto&quot;, &quot;y&quot;: &quot;auto&quot;}</string>
@@ -686,7 +768,23 @@ else:
                <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_3">
                  <item>
+                  <spacer name="horizontalSpacer_3">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
                   <widget class="CRelatedDisplayButton" name="CRelatedDisplayButton_rawBuf0">
+                   <property name="styleSheet">
+                    <string notr="true"/>
+                   </property>
                    <property name="text">
                     <string> Fullscreen</string>
                    </property>
@@ -712,19 +810,6 @@ else:
                    </property>
                   </widget>
                  </item>
-                 <item>
-                  <spacer name="horizontalSpacer_3">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
                 </layout>
                </item>
               </layout>
@@ -744,43 +829,7 @@ QWidget.QLabel{
 	border: 2px solid black;
 }</string>
                  </property>
-                 <layout class="QGridLayout" name="gridLayout_7" rowstretch="90,100,100,100,100,100" columnminimumwidth="80,80">
-                  <item row="3" column="0">
-                   <widget class="CLabel" name="CLabel_19">
-                    <property name="text">
-                     <string>3rd</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="1">
-                   <widget class="CLabel" name="CLabel_Overtones1_1">
-                    <property name="text">
-                     <string>Null</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignCenter</set>
-                    </property>
-                    <property name="valueTransformation">
-                     <string notr="true">if len(new_val) &gt;= 1:
-    output('{0:.2f} kHz'.format(new_val[0]))
-else:
-    output('-')</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="label_24">
-                    <property name="text">
-                     <string>Overtones</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignCenter</set>
-                    </property>
-                   </widget>
-                  </item>
+                 <layout class="QGridLayout" name="gridLayout_7" rowstretch="90,100,100,100,100,100,100,100" columnminimumwidth="80,80">
                   <item row="4" column="1">
                    <widget class="CLabel" name="CLabel_Overtones1_4">
                     <property name="text">
@@ -794,16 +843,6 @@ else:
     output('{0:.2f} kHz'.format(new_val[3]))
 else:
     output('-')</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="1">
-                   <widget class="QLabel" name="label_23">
-                    <property name="text">
-                     <string>Frequency</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignCenter</set>
                     </property>
                    </widget>
                   </item>
@@ -823,6 +862,32 @@ else:
                     </property>
                    </widget>
                   </item>
+                  <item row="1" column="1">
+                   <widget class="CLabel" name="CLabel_Overtones1_1">
+                    <property name="text">
+                     <string>Null</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                    <property name="valueTransformation">
+                     <string notr="true">if len(new_val) &gt;= 1:
+    output('{0:.2f} kHz'.format(new_val[0]))
+else:
+    output('-')</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="CLabel" name="CLabel_19">
+                    <property name="text">
+                     <string>3rd</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
                   <item row="4" column="0">
                    <widget class="CLabel" name="CLabel_29">
                     <property name="text">
@@ -836,26 +901,30 @@ else:
                     </property>
                    </widget>
                   </item>
-                  <item row="3" column="1">
-                   <widget class="CLabel" name="CLabel_Overtones1_3">
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="label_24">
                     <property name="text">
-                     <string>Null</string>
+                     <string>Overtones</string>
                     </property>
                     <property name="alignment">
                      <set>Qt::AlignCenter</set>
                     </property>
-                    <property name="valueTransformation">
-                     <string notr="true">if len(new_val) &gt;= 3:
-    output('{0:.2f} kHz'.format(new_val[2]))
-else:
-    output('-')</string>
+                   </widget>
+                  </item>
+                  <item row="6" column="0">
+                   <widget class="CLabel" name="CLabel_4">
+                    <property name="text">
+                     <string>6th</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
                     </property>
                    </widget>
                   </item>
-                  <item row="1" column="0">
-                   <widget class="CLabel" name="CLabel_23">
+                  <item row="0" column="1">
+                   <widget class="QLabel" name="label_23">
                     <property name="text">
-                     <string>1st</string>
+                     <string>Frequency</string>
                     </property>
                     <property name="alignment">
                      <set>Qt::AlignCenter</set>
@@ -866,6 +935,32 @@ else:
                    <widget class="CLabel" name="CLabel_22">
                     <property name="text">
                      <string>2nd</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="6" column="1">
+                   <widget class="CLabel" name="CLabel_Overtones1_6">
+                    <property name="text">
+                     <string>Null</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                    <property name="valueTransformation">
+                     <string notr="true">if len(new_val) &gt;= 6:
+    output('{0:.2f} kHz'.format(new_val[5]))
+else:
+    output('-')</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="CLabel" name="CLabel_23">
+                    <property name="text">
+                     <string>1st</string>
                     </property>
                     <property name="alignment">
                      <set>Qt::AlignCenter</set>
@@ -898,24 +993,60 @@ else:
                     </property>
                    </widget>
                   </item>
+                  <item row="3" column="1">
+                   <widget class="CLabel" name="CLabel_Overtones1_3">
+                    <property name="text">
+                     <string>Null</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                    <property name="valueTransformation">
+                     <string notr="true">if len(new_val) &gt;= 3:
+    output('{0:.2f} kHz'.format(new_val[2]))
+else:
+    output('-')</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="7" column="0">
+                   <widget class="CLabel" name="CLabel_8">
+                    <property name="text">
+                     <string>7th</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="7" column="1">
+                   <widget class="CLabel" name="CLabel_Overtones1_7">
+                    <property name="text">
+                     <string>Null</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                    <property name="valueTransformation">
+                     <string notr="true">if len(new_val) &gt;= 7:
+    output('{0:.2f} kHz'.format(new_val[6]))
+else:
+    output('-')</string>
+                    </property>
+                   </widget>
+                  </item>
                  </layout>
                 </widget>
                </item>
                <item>
-                <spacer name="verticalSpacer_5">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
+                <widget class="QPushButton" name="pushButton_invisible_1">
+                 <property name="enabled">
+                  <bool>false</bool>
                  </property>
-                 <property name="sizeType">
-                  <enum>QSizePolicy::Minimum</enum>
+                 <property name="text">
+                  <string>PushButton</string>
                  </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>80</height>
-                  </size>
-                 </property>
-                </spacer>
+                </widget>
                </item>
               </layout>
              </widget>
