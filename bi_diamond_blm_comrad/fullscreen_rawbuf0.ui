@@ -74,7 +74,7 @@
          <stringlist/>
         </property>
         <property name="axisLabels" stdset="0">
-         <string>{&quot;right&quot;: &quot;amplitude&quot;, &quot;bottom&quot;: &quot;time (microseconds)&quot;, &quot;top&quot;: &quot;time (microseconds)&quot;, &quot;left&quot;: &quot;amplitude&quot;}</string>
+         <string>{&quot;right&quot;: &quot;amplitude&quot;, &quot;left&quot;: &quot;amplitude&quot;, &quot;top&quot;: &quot;time (microseconds)&quot;, &quot;bottom&quot;: &quot;time (microseconds)&quot;}</string>
         </property>
         <property name="axisRanges" stdset="0">
          <string>{&quot;x&quot;: &quot;auto&quot;, &quot;y&quot;: &quot;auto&quot;}</string>
@@ -100,12 +100,22 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
+         <widget class="QCheckBox" name="checkBox_turn">
+          <property name="text">
+           <string>Turns</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QCheckBox" name="checkBox_bunch">
           <property name="styleSheet">
            <string notr="true"/>
           </property>
           <property name="text">
-           <string>Bunch</string>
+           <string>Bunchs</string>
           </property>
           <property name="checked">
            <bool>true</bool>

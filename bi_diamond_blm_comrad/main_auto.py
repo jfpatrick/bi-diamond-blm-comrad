@@ -1,0 +1,657 @@
+########################################################
+########################################################
+
+# GUI created by: martinja
+# Contact: javier.martinez.samblas@cern.ch
+
+########################################################
+########################################################
+
+# COMRAD AND PYQT IMPORTS
+
+from comrad import (CDisplay, PyDMChannelDataSource, CurveData, PointData, PlottingItemData, TimestampMarkerData, TimestampMarkerCollectionData, UpdateSource, CContextFrame, CStaticPlot, CLabel, CCommandButton)
+from PyQt5.QtGui import (QIcon, QColor, QGuiApplication, QCursor, QBrush, QTabWidget)
+from PyQt5.QtCore import (QSize, Qt)
+from PyQt5.QtWidgets import (QSizePolicy, QWidget, QHBoxLayout, QHBoxLayout, QVBoxLayout, QSpacerItem, QFrame, QGridLayout, QLabel)
+import connection_custom
+import pyjapc
+import jpype as jp
+from time import sleep
+
+# OTHER IMPORTS
+
+import sys
+import os
+import numpy as np
+from copy import deepcopy
+
+########################################################
+########################################################
+
+# GLOBALS
+
+UI_FILENAME = "main_auto.ui"
+CAPTURE_TAB = False
+
+########################################################
+########################################################
+
+class MyDisplay(CDisplay):
+
+    #----------------------------------------------#
+
+    # function to read the ui file
+    def ui_filename(self):
+
+        return UI_FILENAME
+
+    #----------------------------------------------#
+
+    # init function
+    def __init__(self, *args, **kwargs):
+
+        # import cern package for handling exceptions
+        self.cern = jp.JPackage("cern")
+
+        # set current device
+        self.current_device = "dBLM.TEST4"
+        self.LoadDeviceFromTxtPremain()
+
+        # input the property list
+        self.property_list = ["AcquisitionHistogram", "AcquisitionIntegral",
+                              "AcquisitionIntegralDist", "AcquisitionRawDist", "AcquisitionTurnLoss",
+                              "Capture", "GeneralInformation"]
+
+        # order the property list
+        self.property_list.sort()
+
+        # input the exception list
+        self.exception_list = ["Capture", "GeneralInformation"]
+
+        # input the command list
+        self.command_list = ["ResetCapture", "StartHistogram", "StartIntegral", "StartTurnLoss",
+                             "StopHistogram", "StopIntegral", "StopTurnLoss", "TriggerCapture"]
+
+        # order the command list
+        self.command_list.sort()
+
+        # remove typical command substrings
+        self.command_list_substrings_removed = deepcopy(self.command_list)
+        for index_command in range(0, len(self.command_list_substrings_removed)):
+            self.command_list_substrings_removed[index_command] = self.command_list_substrings_removed[index_command].replace("Reset", "")
+            self.command_list_substrings_removed[index_command] = self.command_list_substrings_removed[index_command].replace("Start", "")
+            self.command_list_substrings_removed[index_command] = self.command_list_substrings_removed[index_command].replace("Stop", "")
+            self.command_list_substrings_removed[index_command] = self.command_list_substrings_removed[index_command].replace("Trigger", "")
+
+        # check dict for the capture tab
+        self.current_check_dict = {"ts0": True, "ts1": True, "peaks0": True, "peaks1": True}
+
+        # initialize the field dictionary
+        self.field_dict = {}
+
+        # create japc object
+        # self.japc = pyjapc.PyJapc(incaAcceleratorName = None)  # use this line when launching the main application
+        self.japc = pyjapc.PyJapc() # use this line when launching the module for debugging
+
+        # set japc selector
+        self.japc.setSelector("")
+
+        # load the gui, build the widgets and handle the signals
+        print("{} - Loading the GUI file...".format(UI_FILENAME))
+        super().__init__(*args, **kwargs)
+        self.setWindowTitle("BLM DIAMOND MAIN")
+        print("{} - Building the code-only widgets...".format(UI_FILENAME))
+        self.buildCodeWidgets()
+        print("{} - Handling signals and slots...".format(UI_FILENAME))
+        self.bindWidgets()
+
+        # only if CAPTURE_TAB is enabled (use this for debugging)
+        if CAPTURE_TAB:
+
+            # init custom PyDM channels for the Capture plots
+            self.pydm_channel_capture_rawbuffer_0 = PyDMChannelDataSource(channel_address="rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.current_device + "/" + "bufferFFT#rawBuffer0", data_type_to_emit=CurveData, parent=self.CStaticPlot_Capture_rawBuf0)
+            self.pydm_channel_capture_rawbuffer_0_FFT = PyDMChannelDataSource(channel_address="rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.current_device + "/" + "bufferFFT#rawBuffer0_FFT", data_type_to_emit=CurveData, parent=self.CStaticPlot_Capture_rawBuf0_FFT)
+            self.pydm_channel_capture_rawbuffer_1 = PyDMChannelDataSource(channel_address="rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.current_device + "/" + "bufferFFT#rawBuffer1", data_type_to_emit=CurveData, parent=self.CStaticPlot_Capture_rawBuf1)
+            self.pydm_channel_capture_rawbuffer_1_FFT = PyDMChannelDataSource(channel_address="rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.current_device + "/" + "bufferFFT#rawBuffer1_FFT", data_type_to_emit=CurveData, parent=self.CStaticPlot_Capture_rawBuf1_FFT)
+            self.pydm_channel_capture_rawbuffer_0_timestamps = PyDMChannelDataSource(channel_address="rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.current_device + "/" + "bufferFFT#flags0_five_six", data_type_to_emit=CurveData, parent=self.CStaticPlot_Capture_rawBuf0)
+            self.pydm_channel_capture_rawbuffer_1_timestamps = PyDMChannelDataSource(channel_address="rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.current_device + "/" + "bufferFFT#flags1_five_six", data_type_to_emit=CurveData, parent=self.CStaticPlot_Capture_rawBuf1)
+            self.pydm_channel_capture_rawbuffer_0_FFT_xplots_overtones = PyDMChannelDataSource(channel_address="rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.current_device + "/" + "bufferFFT#peaks_freq0_xplots", data_type_to_emit=CurveData, parent=self.CStaticPlot_Capture_rawBuf0_FFT)
+            self.pydm_channel_capture_rawbuffer_1_FFT_xplots_overtones = PyDMChannelDataSource(channel_address="rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.current_device + "/" + "bufferFFT#peaks_freq1_xplots", data_type_to_emit=CurveData, parent=self.CStaticPlot_Capture_rawBuf1_FFT)
+
+        # load and set the channels
+        print("{} - Setting all channels...".format(UI_FILENAME))
+        self.setChannels()
+
+        return
+
+    #----------------------------------------------#
+
+    # function that builds the widgets that weren't initialized using the UI qt designer file
+    def buildCodeWidgets(self):
+
+        # initialize widget dicts
+        self.tabDict = {}
+        self.layoutDict = {}
+        self.labelDict = {}
+        self.clabelDict = {}
+        self.commandButtonDict = {}
+        self.contextFrameDict = {}
+        self.staticPlotDict = {}
+        self.frameDict = {}
+
+        # iterate over the property tabs
+        for property in self.property_list:
+
+            # custom tab
+            if str(property) in self.exception_list:
+
+                # CAPTURE TAB - change cursors of CRelatedDisplayButton to normal ArrowCursor
+                self.CRelatedDisplayButton_rawBuf0.setCursor(QCursor(Qt.ArrowCursor))
+                self.CRelatedDisplayButton_rawBuf0_FFT.setCursor(QCursor(Qt.ArrowCursor))
+                self.CRelatedDisplayButton_rawBuf1.setCursor(QCursor(Qt.ArrowCursor))
+                self.CRelatedDisplayButton_rawBuf1_FFT.setCursor(QCursor(Qt.ArrowCursor))
+
+                # CAPTURE TAB - make push buttons invisible just to make the grid look nicer
+                sp_retain0 = self.pushButton_invisible_0.sizePolicy()
+                sp_retain0.setRetainSizeWhenHidden(True)
+                self.pushButton_invisible_0.setSizePolicy(sp_retain0)
+                self.pushButton_invisible_0.hide()
+                sp_retain1 = self.pushButton_invisible_1.sizePolicy()
+                sp_retain1.setRetainSizeWhenHidden(True)
+                self.pushButton_invisible_1.setSizePolicy(sp_retain1)
+                self.pushButton_invisible_1.hide()
+
+                pass
+
+            # generic tab
+            else:
+
+                # init tab
+                self.tabDict["{}".format(property)] = QWidget()
+                self.tabDict["{}".format(property)].setObjectName("tab_{}".format(property))
+
+                # horizontal layout of the tab
+                self.layoutDict["horizontal_layout_tab_{}".format(property)] = QHBoxLayout(self.tabDict["{}".format(property)])
+                self.layoutDict["horizontal_layout_tab_{}".format(property)].setObjectName("horizontal_layout_tab_{}".format(property))
+
+                # context frame of the CStaticPlot area
+                self.contextFrameDict["CStaticPlot_area_{}".format(property)] = CContextFrame(self.tabDict["{}".format(property)])
+                self.contextFrameDict["CStaticPlot_area_{}".format(property)].setObjectName("CStaticPlot_area_{}".format(property))
+
+                # vertical layout of the CStaticPlot area
+                self.layoutDict["vertical_layout_tab_CStaticplot_area_{}".format(property)] = QVBoxLayout(self.contextFrameDict["CStaticPlot_area_{}".format(property)])
+                self.layoutDict["vertical_layout_tab_CStaticplot_area_{}".format(property)].setObjectName("vertical_layout_tab_CStaticplot_area_{}".format(property))
+                self.layoutDict["vertical_layout_tab_CStaticplot_area_{}".format(property)].setSpacing(12)
+
+                # context frame of the information area
+                self.contextFrameDict["CContextFrame_information_area_{}".format(property)] = CContextFrame(self.tabDict["{}".format(property)])
+                self.contextFrameDict["CContextFrame_information_area_{}".format(property)].setObjectName("CContextFrame_information_area_{}".format(property))
+
+                # vertical layout of the information area
+                self.layoutDict["vertical_layout_tab_information_area_{}".format(property)] = QVBoxLayout(self.contextFrameDict["CContextFrame_information_area_{}".format(property)])
+                self.layoutDict["vertical_layout_tab_information_area_{}".format(property)].setObjectName("vertical_layout_tab_information_area_{}".format(property))
+
+                # top spacer
+                spacerItem_top = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+                self.layoutDict["vertical_layout_tab_information_area_{}".format(property)].addItem(spacerItem_top)
+
+                # frame for the generic table
+                self.frameDict["frame_information_area_{}".format(property)] = QFrame(self.contextFrameDict["CContextFrame_information_area_{}".format(property)])
+                self.frameDict["frame_information_area_{}".format(property)].setObjectName("frame_information_area_{}".format(property))
+                self.frameDict["frame_information_area_{}".format(property)].setFrameShape(QFrame.NoFrame)
+                self.frameDict["frame_information_area_{}".format(property)].setFrameShadow(QFrame.Plain)
+
+                # grid layout for the generic table
+                self.layoutDict["grid_layout_tab_information_area_{}".format(property)] = QGridLayout(self.frameDict["frame_information_area_{}".format(property)])
+                self.layoutDict["grid_layout_tab_information_area_{}".format(property)].setObjectName("grid_layout_tab_information_area_{}".format(property))
+
+                # get information via pyjapc
+                try:
+
+                    # get the field values and names
+                    all_data_from_pyjapc = self.japc.getParam("{}/{}".format(self.current_device, property), noPyConversion=False)
+
+                # this exception occurs when the fields have no data (for example, trying to acquire histo data before running the histo command)
+                # update: to be honest I don't know when this does occur; right now it is working even though the histo has stopped receiving data
+                except self.cern.japc.core.NoDataAvailableException:
+
+                    # print the exception
+                    print("{} - Exception: cern.japc.core.NoDataAvailableException - Please, make sure that the fields are receiving data before trying to create the dynamic interface...".format(UI_FILENAME))
+                    print("{} - Skipping tab: {}".format(UI_FILENAME, property))
+
+                    # continue to the next tab
+                    continue
+
+                # retrieve the fields in case all_data_from_pyjapc was created in the right way
+                self.field_dict["{}".format(property)] = {}
+                self.field_dict["{}".format(property)]["fields_that_are_arrays"] = []
+                self.field_dict["{}".format(property)]["fields_that_are_not_arrays"] = []
+                for key, val in all_data_from_pyjapc.items():
+                    if "_indexes" in key or "_compressed" in key:
+                        continue
+                    if isinstance(val, list) or isinstance(val, np.ndarray):
+                        self.field_dict["{}".format(property)]["fields_that_are_arrays"].append(key)
+                    else:
+                        self.field_dict["{}".format(property)]["fields_that_are_not_arrays"].append(key)
+
+                # sort the lists
+                self.field_dict["{}".format(property)]["fields_that_are_not_arrays"].sort()
+                self.field_dict["{}".format(property)]["fields_that_are_arrays"].sort()
+
+                # add the top title labels (the first row of the table)
+                row = 0
+
+                # set fields label (column == 0)
+                column = 0
+                self.labelDict["{}_{}".format(property, "title_fields")] = QLabel(self.frameDict["frame_information_area_{}".format(property)])
+                self.labelDict["{}_{}".format(property, "title_fields")].setObjectName("label_{}_{}".format(property, "title_fields"))
+                self.labelDict["{}_{}".format(property, "title_fields")].setMinimumSize(QSize(0, 30))
+                self.labelDict["{}_{}".format(property, "title_fields")].setAlignment(Qt.AlignCenter)
+                self.labelDict["{}_{}".format(property, "title_fields")].setText("{}".format("Fields"))
+                self.labelDict["{}_{}".format(property, "title_fields")].setStyleSheet("background-color: rgb(220, 220, 220);")
+                self.layoutDict["grid_layout_tab_information_area_{}".format(property)].addWidget(self.labelDict["{}_{}".format(property, "title_fields")], row, column, 1, 1)
+
+                # set values label (column == 1)
+                column = 1
+                self.labelDict["{}_{}".format(property, "title_values")] = QLabel(self.frameDict["frame_information_area_{}".format(property)])
+                self.labelDict["{}_{}".format(property, "title_values")].setObjectName("label_{}_{}".format(property, "title_values"))
+                self.labelDict["{}_{}".format(property, "title_values")].setMinimumSize(QSize(0, 30))
+                self.labelDict["{}_{}".format(property, "title_values")].setAlignment(Qt.AlignCenter)
+                self.labelDict["{}_{}".format(property, "title_values")].setText("{}".format("Values"))
+                self.labelDict["{}_{}".format(property, "title_values")].setStyleSheet("background-color: rgb(220, 220, 220);")
+                self.layoutDict["grid_layout_tab_information_area_{}".format(property)].addWidget(self.labelDict["{}_{}".format(property, "title_values")], row, column, 1, 1)
+
+                # add the labels to the table
+                row = 1
+                for field in self.field_dict["{}".format(property)]["fields_that_are_not_arrays"]:
+
+                    # set label (column == 0)
+                    column = 0
+                    self.labelDict["{}_{}".format(property, field)] = QLabel(self.frameDict["frame_information_area_{}".format(property)])
+                    self.labelDict["{}_{}".format(property, field)].setObjectName("label_{}_{}".format(property, field))
+                    self.labelDict["{}_{}".format(property, field)].setMinimumSize(QSize(0, 30))
+                    self.labelDict["{}_{}".format(property, field)].setAlignment(Qt.AlignCenter)
+                    self.labelDict["{}_{}".format(property, field)].setText("{}".format(field))
+                    self.layoutDict["grid_layout_tab_information_area_{}".format(property)].addWidget(self.labelDict["{}_{}".format(property, field)], row, column, 1, 1)
+
+                    # set clabel (column == 1)
+                    column = 1
+                    self.clabelDict["{}_{}".format(property, field)] = CLabel(self.frameDict["frame_information_area_{}".format(property)])
+                    self.clabelDict["{}_{}".format(property, field)].setObjectName("clabel_{}_{}".format(property, field))
+                    self.clabelDict["{}_{}".format(property, field)].setProperty("type", 1)
+                    self.clabelDict["{}_{}".format(property, field)].setMinimumSize(QSize(0, 30))
+                    self.clabelDict["{}_{}".format(property, field)].setAlignment(Qt.AlignCenter)
+                    self.clabelDict["{}_{}".format(property, field)].setText("{}".format(all_data_from_pyjapc[field]))
+                    self.layoutDict["grid_layout_tab_information_area_{}".format(property)].addWidget(self.clabelDict["{}_{}".format(property, field)], row, column, 1, 1)
+
+                    # get the next field
+                    row += 1
+
+                # add the commands to the table
+                for index_command, command_substring in enumerate(self.command_list_substrings_removed):
+
+                    # check if the command has to do with the property tab
+                    if command_substring in property:
+
+                        # set the command
+                        command = self.command_list[index_command]
+
+                        # set label (column == 0)
+                        column = 0
+                        self.labelDict["{}_{}".format(property, command)] = QLabel(self.frameDict["frame_information_area_{}".format(property)])
+                        self.labelDict["{}_{}".format(property, command)].setObjectName("label_{}_{}".format(property, command))
+                        self.labelDict["{}_{}".format(property, command)].setMinimumSize(QSize(0, 30))
+                        self.labelDict["{}_{}".format(property, command)].setAlignment(Qt.AlignCenter)
+                        self.labelDict["{}_{}".format(property, command)].setText("{}".format(command))
+                        self.layoutDict["grid_layout_tab_information_area_{}".format(property)].addWidget(self.labelDict["{}_{}".format(property, command)], row, column, 1, 1)
+
+                        # set ccommandbutton (column == 1)
+                        column = 1
+                        self.commandButtonDict["{}_{}".format(property, command)] = CCommandButton(self.frameDict["frame_information_area_{}".format(property)])
+                        self.commandButtonDict["{}_{}".format(property, command)].setObjectName("ccommandbutton_{}_{}".format(property, command))
+                        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+                        sizePolicy.setHorizontalStretch(0)
+                        sizePolicy.setVerticalStretch(0)
+                        sizePolicy.setHeightForWidth(self.commandButtonDict["{}_{}".format(property, command)].sizePolicy().hasHeightForWidth())
+                        self.commandButtonDict["{}_{}".format(property, command)].setSizePolicy(sizePolicy)
+                        self.commandButtonDict["{}_{}".format(property, command)].setText("{}".format(" Run"))
+                        self.commandButtonDict["{}_{}".format(property, command)].setIcon(QIcon("../icons/command.png"))
+                        self.commandButtonDict["{}_{}".format(property, command)].setMinimumSize(QSize(0, 30))
+                        self.commandButtonDict["{}_{}".format(property, command)].channel = "{}/{}".format(self.current_device, command)
+                        self.layoutDict["grid_layout_tab_information_area_{}".format(property)].addWidget(self.commandButtonDict["{}_{}".format(property, command)], row, column, 1, 1)
+
+                        # get the next command
+                        row += 1
+
+                # add the acq timestamp on top of the cstaticplots
+                self.clabelDict["{}_AcqTimestamp".format(property)] = CLabel(self.frameDict["frame_information_area_{}".format(property)])
+                self.clabelDict["{}_AcqTimestamp".format(property)].setObjectName("{}_AcqTimestamp".format(property))
+                self.clabelDict["{}_AcqTimestamp".format(property)].setProperty("type", 2)
+                self.clabelDict["{}_AcqTimestamp".format(property)].setText("acqStamp: Null")
+                self.clabelDict["{}_AcqTimestamp".format(property)].setAlignment(Qt.AlignCenter)
+                self.layoutDict["vertical_layout_tab_CStaticplot_area_{}".format(property)].addWidget(self.clabelDict["{}_AcqTimestamp".format(property)])
+
+                # add the plots
+                for field in self.field_dict["{}".format(property)]["fields_that_are_arrays"]:
+                    self.staticPlotDict["CStaticPlot_{}_{}".format(property, field)] = CStaticPlot(self.contextFrameDict["CStaticPlot_area_{}".format(property)])
+                    self.staticPlotDict["CStaticPlot_{}_{}".format(property, field)].setObjectName("CStaticPlot_{}_{}".format(property, field))
+                    self.layoutDict["vertical_layout_tab_CStaticplot_area_{}".format(property)].addWidget(self.staticPlotDict["CStaticPlot_{}_{}".format(property, field)])
+
+                # add the plotting area to the layout
+                self.layoutDict["horizontal_layout_tab_{}".format(property)].addWidget(self.contextFrameDict["CStaticPlot_area_{}".format(property)])
+
+                # add the frame to the vertical layout of the information area
+                self.layoutDict["vertical_layout_tab_information_area_{}".format(property)].addWidget(self.frameDict["frame_information_area_{}".format(property)])
+
+                # bottom spacer
+                spacerItem_bottom = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+                self.layoutDict["vertical_layout_tab_information_area_{}".format(property)].addItem(spacerItem_bottom)
+
+                # add the information context frame to the horizontal layout of the tab and adjust the dimensions
+                self.layoutDict["horizontal_layout_tab_{}".format(property)].addWidget(self.contextFrameDict["CContextFrame_information_area_{}".format(property)])
+                self.layoutDict["horizontal_layout_tab_{}".format(property)].setStretch(0, 79)
+                self.layoutDict["horizontal_layout_tab_{}".format(property)].setStretch(1, 21)
+
+                # finally add the tab to the tabWidget panel
+                self.tabWidget.addTab(self.tabDict["{}".format(property)], "{}".format(property))
+
+                # move the last tab to the left
+                self.tabWidget.tabBar().moveTab(self.tabWidget.count(), 0)
+
+        # reorder tabs alphabetically with the bubble sort algorithm
+        for tab_i in range(0, self.tabWidget.count()-1):
+            for tab_j in range(0, self.tabWidget.count()-tab_i-1):
+                if self.tabWidget.tabText(tab_j) > self.tabWidget.tabText(tab_j+1):
+                    self.tabWidget.tabBar().moveTab(tab_j, tab_j+1)
+
+        # set the focus to the first tab
+        self.tabWidget.setCurrentIndex(0)
+
+        # obtain the tab names
+        self.tab_names = [self.tabWidget.tabText(tab_i) for tab_i in range(0, self.tabWidget.count())]
+
+        return
+
+    #----------------------------------------------#
+
+    # function that initializes signal-slot dependencies
+    def bindWidgets(self):
+
+        # checkbox for enabling and disabling turns of rawbuf0
+        self.checkBox_turns_0.stateChanged.connect(self.pleaseShowTurns0)
+
+        # checkbox for enabling and disabling turns of rawbuf1
+        self.checkBox_turns_1.stateChanged.connect(self.pleaseShowTurns1)
+
+        # checkbox for enabling and disabling peaks of rawbuf0_FFT
+        self.checkBox_peaks_0.stateChanged.connect(self.pleaseShowPeaks0)
+
+        # checkbox for enabling and disabling peaks of rawbuf1_FFT
+        self.checkBox_peaks_1.stateChanged.connect(self.pleaseShowPeaks1)
+
+        # write device into txt for fullscreen mode
+        self.CRelatedDisplayButton_rawBuf0.clicked.connect(self.writeDeviceIntoTxtForFullScreen)
+        self.CRelatedDisplayButton_rawBuf1.clicked.connect(self.writeDeviceIntoTxtForFullScreen)
+        self.CRelatedDisplayButton_rawBuf0_FFT.clicked.connect(self.writeDeviceIntoTxtForFullScreen)
+        self.CRelatedDisplayButton_rawBuf1_FFT.clicked.connect(self.writeDeviceIntoTxtForFullScreen)
+
+        return
+
+    #----------------------------------------------#
+
+    # function that loads the device from the aux txt file
+    def LoadDeviceFromTxtPremain(self):
+
+        if os.path.exists("aux_txts/current_device_premain.txt"):
+            with open("aux_txts/current_device_premain.txt", "r") as f:
+                self.current_device = f.read()
+
+        return
+
+    #----------------------------------------------#
+
+    # function that writes the device name into a txt file
+    def writeDeviceIntoTxtForFullScreen(self):
+
+        if not os.path.exists("aux_txts"):
+            os.mkdir("aux_txts")
+
+        with open("aux_txts/current_device.txt", "w") as f:
+            f.write(str(self.current_device))
+
+        return
+
+    #----------------------------------------------#
+
+    # function to add or remove the turn flags from the plot of rawbuf0
+    def pleaseShowTurns0(self, state):
+
+        if state == Qt.Checked:
+
+            print('turns0 button checked')
+            self.current_check_dict["ts0"] = True
+            self.CStaticPlot_Capture_rawBuf0.clear_items()
+            self.CStaticPlot_Capture_rawBuf0.addItem(self.CURVE_pydm_channel_capture_rawbuffer_0_timestamps)
+            if self.current_check_dict["ts0"]:
+                self.CStaticPlot_Capture_rawBuf0.addItem(self.CURVE_pydm_channel_capture_rawbuffer_0)
+            self.pydm_channel_capture_rawbuffer_0.context_changed()
+            self.pydm_channel_capture_rawbuffer_0_timestamps.context_changed()
+
+        else:
+
+            print('turns0 button unchecked')
+            self.current_check_dict["ts0"] = False
+            self.CStaticPlot_Capture_rawBuf0.removeItem(self.CURVE_pydm_channel_capture_rawbuffer_0_timestamps)
+            self.pydm_channel_capture_rawbuffer_0.context_changed()
+            self.pydm_channel_capture_rawbuffer_0_timestamps.context_changed()
+
+        return
+
+    #----------------------------------------------#
+
+    # function to add or remove the turn flags from the plot of rawbuf1
+    def pleaseShowTurns1(self, state):
+
+        if state == Qt.Checked:
+
+            print('turns1 button checked')
+            self.current_check_dict["ts1"] = True
+            self.CStaticPlot_Capture_rawBuf1.clear_items()
+            self.CStaticPlot_Capture_rawBuf1.addItem(self.CURVE_pydm_channel_capture_rawbuffer_1_timestamps)
+            if self.current_check_dict["ts1"]:
+                self.CStaticPlot_Capture_rawBuf1.addItem(self.CURVE_pydm_channel_capture_rawbuffer_1)
+            self.pydm_channel_capture_rawbuffer_1.context_changed()
+            self.pydm_channel_capture_rawbuffer_1_timestamps.context_changed()
+
+        else:
+
+            print('turns1 button unchecked')
+            self.current_check_dict["ts1"] = False
+            self.CStaticPlot_Capture_rawBuf1.removeItem(self.CURVE_pydm_channel_capture_rawbuffer_1_timestamps)
+            self.pydm_channel_capture_rawbuffer_1.context_changed()
+            self.pydm_channel_capture_rawbuffer_1_timestamps.context_changed()
+
+        return
+
+    #----------------------------------------------#
+
+    # function to add or remove the peaks from the plot of rawbuf0_FFT
+    def pleaseShowPeaks0(self, state):
+
+        if state == Qt.Checked:
+
+            print('peaks0 button checked')
+            self.current_check_dict["peaks0"] = True
+            self.CStaticPlot_Capture_rawBuf0_FFT.clear_items()
+            self.CStaticPlot_Capture_rawBuf0_FFT.addItem(self.CURVE_pydm_channel_capture_rawbuffer_0_FFT)
+            if self.current_check_dict["peaks0"]:
+                self.CStaticPlot_Capture_rawBuf0_FFT.addItem(self.CURVE_pydm_channel_capture_rawbuffer_0_FFT_xplots_overtones)
+            self.pydm_channel_capture_rawbuffer_0_FFT.context_changed()
+            self.pydm_channel_capture_rawbuffer_0_FFT_xplots_overtones.context_changed()
+
+
+        else:
+
+            print('peaks0 button unchecked')
+            self.current_check_dict["peaks0"] = False
+            self.CStaticPlot_Capture_rawBuf0_FFT.removeItem(
+                self.CURVE_pydm_channel_capture_rawbuffer_0_FFT_xplots_overtones)
+            self.pydm_channel_capture_rawbuffer_0_FFT.context_changed()
+            self.pydm_channel_capture_rawbuffer_0_FFT_xplots_overtones.context_changed()
+
+        return
+
+    #----------------------------------------------#
+
+    # function to add or remove the peaks from the plot of rawbuf1_FFT
+    def pleaseShowPeaks1(self, state):
+
+        if state == Qt.Checked:
+
+            print('peaks1 button checked')
+            self.current_check_dict["peaks1"] = True
+            self.CStaticPlot_Capture_rawBuf1_FFT.clear_items()
+            self.CStaticPlot_Capture_rawBuf1_FFT.addItem(self.CURVE_pydm_channel_capture_rawbuffer_1_FFT)
+            if self.current_check_dict["peaks1"]:
+                self.CStaticPlot_Capture_rawBuf1_FFT.addItem(self.CURVE_pydm_channel_capture_rawbuffer_1_FFT_xplots_overtones)
+            self.pydm_channel_capture_rawbuffer_1_FFT.context_changed()
+            self.pydm_channel_capture_rawbuffer_1_FFT_xplots_overtones.context_changed()
+
+
+        else:
+
+            print('peaks1 button unchecked')
+            self.current_check_dict["peaks1"] = False
+            self.CStaticPlot_Capture_rawBuf1_FFT.removeItem(self.CURVE_pydm_channel_capture_rawbuffer_1_FFT_xplots_overtones)
+            self.pydm_channel_capture_rawbuffer_1_FFT.context_changed()
+            self.pydm_channel_capture_rawbuffer_1_FFT_xplots_overtones.context_changed()
+
+        return
+
+    #----------------------------------------------#
+
+    # function that set the right channels for each widget depending on the selected device
+    def setChannels(self):
+
+        # set channels for the generic tabs
+        for property in self.property_list:
+
+            # make sure the tab was created
+            if property in self.tab_names and property in self.field_dict:
+
+                # set up the acq timestamp
+                self.clabelDict["{}_AcqTimestamp".format(property)].channel = "{}/{}#{}".format(self.current_device, property, "acqStamp")
+                self.clabelDict["{}_AcqTimestamp".format(property)].setValueTransformation("output(\'acqStamp: {}\'.format(new_val))")
+
+                # iterate over the non-plot fields
+                for field in self.field_dict["{}".format(property)]["fields_that_are_not_arrays"]:
+
+                    # set the channel with a normal CLabel.channel allocation
+                    self.clabelDict["{}_{}".format(property, field)].channel = "{}/{}#{}".format(self.current_device, property, field)
+
+                # iterate over the plot fields
+                for field in self.field_dict["{}".format(property)]["fields_that_are_arrays"]:
+
+                    # set the channel with an addCurve update
+                    self.staticPlotDict["CStaticPlot_{}_{}".format(property, field)].addCurve(data_source = "{}/{}#{}".format(self.current_device, property, field))
+
+                    # set the title of the plot
+                    self.staticPlotDict["CStaticPlot_{}_{}".format(property, field)]._set_plot_title("{}".format(field))
+
+                    # the axis have to be added manually by hand
+                    if "AcquisitionHistogram" == property:
+                        self.staticPlotDict["CStaticPlot_{}_{}".format(property, field)]._set_axis_labels("{\"left\": \"threshold crossings\", \"top\": \"\", \"right\": \"\", \"bottom\": \"bins\"}")
+                    elif "AcquisitionIntegral" == property:
+                       self.staticPlotDict["CStaticPlot_{}_{}".format(property, field)]._set_axis_labels("{\"left\": \"loss\", \"top\": \"\", \"right\": \"\", \"bottom\": \"bunch number\"}")
+                    elif "AcquisitionIntegralDist" == property:
+                       self.staticPlotDict["CStaticPlot_{}_{}".format(property, field)]._set_axis_labels("{\"left\": \"distribution\", \"top\": \"\", \"right\": \"\", \"bottom\": \"value\"}")
+                    elif "AcquisitionRawDist" == property:
+                       self.staticPlotDict["CStaticPlot_{}_{}".format(property, field)]._set_axis_labels("{\"left\": \"distribution\", \"top\": \"\", \"right\": \"\", \"bottom\": \"value\"}")
+                    elif "AcquisitionTurnLoss" == property:
+                       self.staticPlotDict["CStaticPlot_{}_{}".format(property, field)]._set_axis_labels("{\"left\": \"loss\", \"top\": \"\", \"right\": \"\", \"bottom\": \"turn number\"}")
+
+        # set channels for the GeneralInformation tab
+        self.CLabel_GeneralInformation_AcqStamp.channel = self.current_device + "/" + "GeneralInformation#acqStamp"
+        self.CLabel_GeneralInformation_AutoGain.channel = self.current_device + "/" + "GeneralInformation#AutoGain"
+        self.CLabel_GeneralInformation_BeamMomentum.channel = self.current_device + "/" + "GeneralInformation#BeamMomentum"
+        self.CLabel_GeneralInformation_BoardId.channel = self.current_device + "/" + "GeneralInformation#BoardId"
+        self.CLabel_GeneralInformation_BstShift.channel = self.current_device + "/" + "GeneralInformation#BstShift"
+        self.CLabel_GeneralInformation_BunchSample.channel = self.current_device + "/" + "GeneralInformation#BunchSample"
+        self.CLabel_GeneralInformation_FpgaCompilation.channel = self.current_device + "/" + "GeneralInformation#FpgaCompilation"
+        self.CLabel_GeneralInformation_FpgaFirmware.channel = self.current_device + "/" + "GeneralInformation#FpgaFirmware"
+        self.CLabel_GeneralInformation_FpgaStatus.channel = self.current_device + "/" + "GeneralInformation#FpgaStatus"
+        self.CLabel_GeneralInformation_MachineId.channel = self.current_device + "/" + "GeneralInformation#MachineId"
+        self.CLabel_GeneralInformation_MonitorNames.channel = self.current_device + "/" + "GeneralInformation#monitorNames"
+        self.CLabel_GeneralInformation_TurnBc.channel = self.current_device + "/" + "GeneralInformation#TurnBc"
+        self.CLabel_GeneralInformation_TurnDropped.channel = self.current_device + "/" + "GeneralInformation#TurnDropped"
+        self.CLabel_GeneralInformation_TurnSample.channel = self.current_device + "/" + "GeneralInformation#TurnSample"
+
+        # only if CAPTURE_TAB is enabled (use this for debugging)
+        if CAPTURE_TAB:
+
+            # set channels for Capture tab rawBuffer0
+            self.CContextFrame_CaptureTab_rawBuf0.inheritSelector = False
+            self.CContextFrame_CaptureTab_rawBuf0.selector = ""
+            self.CStaticPlot_Capture_rawBuf0.clear_items()
+            self.CStaticPlot_Capture_rawBuf0.addCurve(data_source = "dBLM.TEST4/Capture#rawBuf0", color=QColor("#F0E912"))
+            self.CURVE_pydm_channel_capture_rawbuffer_0_timestamps = self.CStaticPlot_Capture_rawBuf0.addCurve(data_source=self.pydm_channel_capture_rawbuffer_0_timestamps, color=QColor("#F0E912"))
+            self.CURVE_pydm_channel_capture_rawbuffer_0 = self.CStaticPlot_Capture_rawBuf0.addCurve(data_source = self.pydm_channel_capture_rawbuffer_0, color=QColor("#FFFFFF"))
+            self.pydm_channel_capture_rawbuffer_0.context_changed()
+            self.pydm_channel_capture_rawbuffer_0_timestamps.context_changed()
+
+            # set channels for Capture tab rawBuffer1
+            self.CContextFrame_CaptureTab_rawBuf1.inheritSelector = False
+            self.CContextFrame_CaptureTab_rawBuf1.selector = ""
+            self.CStaticPlot_Capture_rawBuf1.clear_items()
+            self.CStaticPlot_Capture_rawBuf1.addCurve(data_source="dBLM.TEST4/Capture#rawBuf1", color=QColor("#F0E912"))
+            self.CURVE_pydm_channel_capture_rawbuffer_1_timestamps = self.CStaticPlot_Capture_rawBuf1.addCurve(data_source=self.pydm_channel_capture_rawbuffer_1_timestamps, color=QColor("#F0E912"))
+            self.CURVE_pydm_channel_capture_rawbuffer_1 = self.CStaticPlot_Capture_rawBuf1.addCurve(data_source=self.pydm_channel_capture_rawbuffer_1, color=QColor("#FFFFFF"))
+            self.pydm_channel_capture_rawbuffer_1.context_changed()
+            self.pydm_channel_capture_rawbuffer_1_timestamps.context_changed()
+
+            # set channels for Capture tab rawBuffer0_FFT
+            self.CContextFrame_CaptureTab_rawBuf0_FFT.inheritSelector = False
+            self.CContextFrame_CaptureTab_rawBuf0_FFT.selector = ""
+            self.CStaticPlot_Capture_rawBuf0_FFT.clear_items()
+            self.CURVE_pydm_channel_capture_rawbuffer_0_FFT = self.CStaticPlot_Capture_rawBuf0_FFT.addCurve(data_source=self.pydm_channel_capture_rawbuffer_0_FFT, color=QColor("#FFFFFF"))
+            self.CURVE_pydm_channel_capture_rawbuffer_0_FFT_xplots_overtones = self.CStaticPlot_Capture_rawBuf0_FFT.addCurve(data_source=self.pydm_channel_capture_rawbuffer_0_FFT_xplots_overtones, color=QColor('yellow'), line_style=Qt.NoPen, symbol="o", symbol_size=8)
+            self.pydm_channel_capture_rawbuffer_0_FFT.context_changed()
+            self.pydm_channel_capture_rawbuffer_0_FFT_xplots_overtones.context_changed()
+
+            # set channels for Capture tab rawBuffer1_FFT
+            self.CContextFrame_CaptureTab_rawBuf1_FFT.inheritSelector = False
+            self.CContextFrame_CaptureTab_rawBuf1_FFT.selector = ""
+            self.CStaticPlot_Capture_rawBuf1_FFT.clear_items()
+            self.CURVE_pydm_channel_capture_rawbuffer_1_FFT = self.CStaticPlot_Capture_rawBuf1_FFT.addCurve(data_source=self.pydm_channel_capture_rawbuffer_1_FFT, color=QColor("#FFFFFF"))
+            self.CURVE_pydm_channel_capture_rawbuffer_1_FFT_xplots_overtones = self.CStaticPlot_Capture_rawBuf1_FFT.addCurve(data_source=self.pydm_channel_capture_rawbuffer_1_FFT_xplots_overtones, color=QColor('yellow'), line_style=Qt.NoPen, symbol="o", symbol_size=8)
+            self.pydm_channel_capture_rawbuffer_1_FFT.context_changed()
+            self.pydm_channel_capture_rawbuffer_1_FFT_xplots_overtones.context_changed()
+
+            # set channels for CLabel overtones of rawbuf0
+            self.CContextFrame_CaptureTab_Overtones_FFT0.inheritSelector = False
+            self.CContextFrame_CaptureTab_Overtones_FFT0.selector = ""
+            self.CLabel_Overtones0_1.channel = "rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.current_device + "/" + "bufferFFT#peaks_freq0"
+            self.CLabel_Overtones0_2.channel = "rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.current_device + "/" + "bufferFFT#peaks_freq0"
+            self.CLabel_Overtones0_3.channel = "rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.current_device + "/" + "bufferFFT#peaks_freq0"
+            self.CLabel_Overtones0_4.channel = "rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.current_device + "/" + "bufferFFT#peaks_freq0"
+            self.CLabel_Overtones0_5.channel = "rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.current_device + "/" + "bufferFFT#peaks_freq0"
+            self.CLabel_Overtones0_6.channel = "rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.current_device + "/" + "bufferFFT#peaks_freq0"
+            self.CLabel_Overtones0_7.channel = "rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.current_device + "/" + "bufferFFT#peaks_freq0"
+
+            # set channels for CLabel overtones of rawbuf1
+            self.CContextFrame_CaptureTab_Overtones_FFT1.inheritSelector = False
+            self.CContextFrame_CaptureTab_Overtones_FFT1.selector = ""
+            self.CLabel_Overtones1_1.channel = "rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.current_device + "/" + "bufferFFT#peaks_freq1"
+            self.CLabel_Overtones1_2.channel = "rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.current_device + "/" + "bufferFFT#peaks_freq1"
+            self.CLabel_Overtones1_3.channel = "rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.current_device + "/" + "bufferFFT#peaks_freq1"
+            self.CLabel_Overtones1_4.channel = "rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.current_device + "/" + "bufferFFT#peaks_freq1"
+            self.CLabel_Overtones1_5.channel = "rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.current_device + "/" + "bufferFFT#peaks_freq1"
+            self.CLabel_Overtones1_6.channel = "rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.current_device + "/" + "bufferFFT#peaks_freq1"
+            self.CLabel_Overtones1_7.channel = "rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.current_device + "/" + "bufferFFT#peaks_freq1"
+
+        return
+
+    #----------------------------------------------#
+
+########################################################
+########################################################

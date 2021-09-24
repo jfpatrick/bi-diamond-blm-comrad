@@ -37,11 +37,9 @@ class MyDisplay(CDisplay):
     # init function
     def __init__(self, *args, **kwargs):
 
-        # set hard-coded device list
-        self.diamond_blm_device_list = ["SP.BA1.BLMDIAMOND.2"]
-
-        # sort the device-list alphabetically
-        self.diamond_blm_device_list.sort()
+        # set current device
+        self.current_device = "SP.BA1.BLMDIAMOND.2"
+        self.LoadDeviceFromTxt()
 
         # other aux variables
         self.current_check_dict = {"peaks":True}
@@ -51,8 +49,8 @@ class MyDisplay(CDisplay):
         self.setWindowTitle("rawBuf1_FFT")
 
         # init PyDM channels
-        self.pydm_channel_capture_rawbuffer_1_FFT = PyDMChannelDataSource(channel_address="rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.diamond_blm_device_list[0] + "/" + "bufferFFT#rawBuffer1_FFT", data_type_to_emit=CurveData, parent=self.CStaticPlot_Capture_rawBuf1_FFT)
-        self.pydm_channel_capture_rawbuffer_1_FFT_xplots_overtones = PyDMChannelDataSource(channel_address="rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.diamond_blm_device_list[0] + "/" + "bufferFFT#peaks_freq1_xplots", data_type_to_emit=CurveData, parent=self.CStaticPlot_Capture_rawBuf1_FFT)
+        self.pydm_channel_capture_rawbuffer_1_FFT = PyDMChannelDataSource(channel_address="rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.current_device + "/" + "bufferFFT#rawBuffer1_FFT", data_type_to_emit=CurveData, parent=self.CStaticPlot_Capture_rawBuf1_FFT)
+        self.pydm_channel_capture_rawbuffer_1_FFT_xplots_overtones = PyDMChannelDataSource(channel_address="rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.current_device + "/" + "bufferFFT#peaks_freq1_xplots", data_type_to_emit=CurveData, parent=self.CStaticPlot_Capture_rawBuf1_FFT)
 
         print("Setting initial channels...")
         self.setChannels()
@@ -74,6 +72,18 @@ class MyDisplay(CDisplay):
 
     #----------------------------------------------#
 
+    # function that loads the device from the aux txt file
+    def LoadDeviceFromTxt(self):
+
+        if os.path.exists("aux_txts/current_device.txt"):
+            with open("aux_txts/current_device.txt", "r") as f:
+                self.current_device = f.read()
+
+        return
+
+    #----------------------------------------------#
+
+    # function for drawing the fft peaks
     def updatePeaks(self, state):
 
         if state == Qt.Checked:
