@@ -12,7 +12,6 @@
 from comrad import (CDisplay, PyDMChannelDataSource, CurveData, PointData, PlottingItemData, TimestampMarkerData, TimestampMarkerCollectionData)
 from PyQt5.QtGui import (QIcon, QColor)
 from PyQt5.QtCore import (QSize, Qt)
-import connection_custom
 
 # OTHER IMPORTS
 

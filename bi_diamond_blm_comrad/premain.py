@@ -14,7 +14,6 @@ from PyQt5.QtGui import (QIcon, QColor, QGuiApplication, QCursor, QStandardItemM
 from PyQt5.QtCore import (QSize, Qt, QTimer)
 from PyQt5.QtWidgets import (QSizePolicy)
 from PyQt5.Qt import QItemSelectionModel
-import connection_custom
 
 # OTHER IMPORTS
 

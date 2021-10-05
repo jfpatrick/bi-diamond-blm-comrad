@@ -13,7 +13,6 @@ from comrad import (CDisplay, PyDMChannelDataSource, CurveData, PointData, Plott
 from PyQt5.QtGui import (QIcon, QColor, QGuiApplication, QCursor, QBrush, QTabWidget)
 from PyQt5.QtCore import (QSize, Qt)
 from PyQt5.QtWidgets import (QSizePolicy, QWidget, QHBoxLayout, QHBoxLayout, QVBoxLayout, QSpacerItem, QFrame, QGridLayout, QLabel)
-# import connection_custom # THIS WAS DEPRECATED
 
 # OTHER IMPORTS
 

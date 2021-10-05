@@ -13,7 +13,6 @@ from comrad import (CLineEdit, CCommandButton, CDisplay, PyDMChannelDataSource, 
 from PyQt5.QtGui import (QIcon, QColor, QGuiApplication, QCursor, QStandardItemModel, QStandardItem, QFont)
 from PyQt5.QtCore import (QSize, Qt, QRect)
 from PyQt5.QtWidgets import (QSizePolicy, QTableWidget, QTableWidgetItem, QAbstractScrollArea, QHeaderView, QScrollArea, QSpacerItem, QPushButton, QGroupBox, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QLineEdit, QDialog, QFrame, QWidget)
-import connection_custom
 
 # OTHER IMPORTS
 
