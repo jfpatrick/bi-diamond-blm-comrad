@@ -14,13 +14,13 @@ from PyQt5.QtGui import (QIcon, QColor, QGuiApplication, QCursor, QStandardItemM
 from PyQt5.QtCore import (QSize, Qt, QRect)
 from PyQt5.QtWidgets import (QSizePolicy, QTableWidget, QTableWidgetItem, QAbstractScrollArea, QHeaderView, QScrollArea, QSpacerItem, QPushButton, QGroupBox, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QLineEdit, QDialog, QFrame, QWidget)
 import connection_custom
-import pyjapc
 
 # OTHER IMPORTS
 
 import sys
 import os
 from time import sleep
+import pyjapc
 
 ########################################################
 ########################################################
@@ -47,6 +47,7 @@ class DialogThreeColumnSet(QDialog):
 
         # retrieve the attributes
         self.property_list = parent.property_list
+        self.selector_exception_properties = parent.selector_exception_properties
         self.current_device = parent.current_device
         self.field_dict = parent.field_dict
         self.japc = parent.japc
@@ -282,7 +283,10 @@ class DialogThreeColumnSet(QDialog):
             self.layoutDict["groupBox_{}".format(property)].setObjectName("layout_groupBox_{}".format(property))
 
             # get field values via pyjapc
-            field_values = self.japc.getParam("{}/{}".format(self.current_device, property))
+            if property in self.selector_exception_properties:
+                field_values = self.japc.getParam("{}/{}".format(self.current_device, property), timingSelectorOverride="")
+            else:
+                field_values = self.japc.getParam("{}/{}".format(self.current_device, property))
 
             # add labels and lineedits to the layout of the property groupbox
             row = 0
@@ -372,7 +376,10 @@ class DialogThreeColumnSet(QDialog):
 
             # set the parameter via pyjapc
             if not areAllFieldsJustTheSame:
-                self.japc.setParam("{}/{}".format(self.current_device, property), dict_to_inject)
+                if property in self.selector_exception_properties:
+                    self.japc.setParam("{}/{}".format(self.current_device, property), dict_to_inject, timingSelectorOverride="")
+                else:
+                    self.japc.setParam("{}/{}".format(self.current_device, property), dict_to_inject)
 
         # update values in the parent panel
         self.dialog_parent.getFunction()
@@ -406,14 +413,27 @@ class MyDisplay(CDisplay):
 
         # set the device
         self.current_device = "dBLM.TEST4"
+        self.LoadDeviceFromTxtPremain()
+
+        # set current selector
+        my_device = "SPS.USER.SFTPRO1"
+        if "dBLM.TEST" not in self.current_device:
+            self.current_selector = my_device
+        else:
+            self.current_selector = ""
 
         # input the property list
         self.property_list = ["BeamLossHistogramSetting", "BeamLossIntegralSetting",
                          "ExpertSetting", "ExpertTriggerSetting", "IntegralDataDistSetting",
                          "RawDataDistributionSetting", "TurnLossMeasurementSetting"]
+        if "dBLM.TEST" not in self.current_device:
+            self.property_list.append("CaptureSetting")
 
         # order the property list
         self.property_list.sort()
+
+        # add here the properties that give exception errors
+        self.selector_exception_properties = ["ExpertSetting", "ExpertTriggerSetting", "CaptureSetting"]
 
         # input the command list
         self.command_list = ["ResetCapture", "StartHistogram", "StartIntegral", "StartTurnLoss",
@@ -430,7 +450,7 @@ class MyDisplay(CDisplay):
         self.japc = pyjapc.PyJapc() # use this line when launching the module for debugging
 
         # set japc selector
-        self.japc.setSelector("")
+        self.japc.setSelector(self.current_selector)
 
         # load the gui, build the widgets and handle the signals
         print("{} - Loading the GUI file...".format(UI_FILENAME))
@@ -535,7 +555,10 @@ class MyDisplay(CDisplay):
             self.field_dict["{}".format(property)].sort()
 
             # get field values via pyjapc
-            field_values = self.japc.getParam("{}/{}".format(self.current_device, property))
+            if property in self.selector_exception_properties:
+                field_values = self.japc.getParam("{}/{}".format(self.current_device, property), timingSelectorOverride="")
+            else:
+                field_values = self.japc.getParam("{}/{}".format(self.current_device, property))
 
             # add labels to the layout of the property groupbox
             row = 0
@@ -602,7 +625,12 @@ class MyDisplay(CDisplay):
         for property in self.property_list:
 
             # get the new field values via pyjapc and add them to the field_values_macro_dict
-            field_values = self.japc.getParam("{}/{}".format(self.current_device, property))
+            if property in self.selector_exception_properties:
+                field_values = self.japc.getParam("{}/{}".format(self.current_device, property), timingSelectorOverride="")
+            else:
+                field_values = self.japc.getParam("{}/{}".format(self.current_device, property))
+
+            # add field values to the macro dict
             self.field_values_macro_dict["{}".format(property)] = field_values
 
             # iterate over all fields
@@ -624,6 +652,17 @@ class MyDisplay(CDisplay):
         # open the dialog
         self.dialog_three_column_set = DialogThreeColumnSet(parent = self)
         self.dialog_three_column_set.show()
+
+        return
+
+    #----------------------------------------------#
+
+    # function that loads the device from the aux txt file
+    def LoadDeviceFromTxtPremain(self):
+
+        if os.path.exists("aux_txts/current_device_premain.txt"):
+            with open("aux_txts/current_device_premain.txt", "r") as f:
+                self.current_device = f.read()
 
         return
 

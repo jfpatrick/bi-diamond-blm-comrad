@@ -14,9 +14,6 @@ from PyQt5.QtGui import (QIcon, QColor, QGuiApplication, QCursor, QBrush, QTabWi
 from PyQt5.QtCore import (QSize, Qt)
 from PyQt5.QtWidgets import (QSizePolicy, QWidget, QHBoxLayout, QHBoxLayout, QVBoxLayout, QSpacerItem, QFrame, QGridLayout, QLabel)
 import connection_custom
-import pyjapc
-import jpype as jp
-from time import sleep
 
 # OTHER IMPORTS
 
@@ -24,6 +21,9 @@ import sys
 import os
 import numpy as np
 from copy import deepcopy
+import pyjapc
+import jpype as jp
+from time import sleep
 
 ########################################################
 ########################################################
@@ -31,7 +31,7 @@ from copy import deepcopy
 # GLOBALS
 
 UI_FILENAME = "main_auto.ui"
-CAPTURE_TAB = False
+CAPTURE_TAB = True
 
 ########################################################
 ########################################################
@@ -56,6 +56,13 @@ class MyDisplay(CDisplay):
         # set current device
         self.current_device = "dBLM.TEST4"
         self.LoadDeviceFromTxtPremain()
+
+        # set current selector
+        my_device = "SPS.USER.SFTPRO1"
+        if "dBLM.TEST" not in self.current_device:
+            self.current_selector = my_device
+        else:
+            self.current_selector = ""
 
         # input the property list
         self.property_list = ["AcquisitionHistogram", "AcquisitionIntegral",
@@ -94,7 +101,7 @@ class MyDisplay(CDisplay):
         self.japc = pyjapc.PyJapc() # use this line when launching the module for debugging
 
         # set japc selector
-        self.japc.setSelector("")
+        self.japc.setSelector(self.current_selector)
 
         # load the gui, build the widgets and handle the signals
         print("{} - Loading the GUI file...".format(UI_FILENAME))
@@ -106,7 +113,7 @@ class MyDisplay(CDisplay):
         self.bindWidgets()
 
         # only if CAPTURE_TAB is enabled (use this for debugging)
-        if CAPTURE_TAB:
+        if CAPTURE_TAB and "dBLM.TEST" not in self.current_device:
 
             # init custom PyDM channels for the Capture plots
             self.pydm_channel_capture_rawbuffer_0 = PyDMChannelDataSource(channel_address="rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.current_device + "/" + "bufferFFT#rawBuffer0", data_type_to_emit=CurveData, parent=self.CStaticPlot_Capture_rawBuf0)
@@ -177,6 +184,8 @@ class MyDisplay(CDisplay):
                 # context frame of the CStaticPlot area
                 self.contextFrameDict["CStaticPlot_area_{}".format(property)] = CContextFrame(self.tabDict["{}".format(property)])
                 self.contextFrameDict["CStaticPlot_area_{}".format(property)].setObjectName("CStaticPlot_area_{}".format(property))
+                self.contextFrameDict["CStaticPlot_area_{}".format(property)].inheritSelector = False
+                self.contextFrameDict["CStaticPlot_area_{}".format(property)].selector = self.current_selector
 
                 # vertical layout of the CStaticPlot area
                 self.layoutDict["vertical_layout_tab_CStaticplot_area_{}".format(property)] = QVBoxLayout(self.contextFrameDict["CStaticPlot_area_{}".format(property)])
@@ -186,6 +195,8 @@ class MyDisplay(CDisplay):
                 # context frame of the information area
                 self.contextFrameDict["CContextFrame_information_area_{}".format(property)] = CContextFrame(self.tabDict["{}".format(property)])
                 self.contextFrameDict["CContextFrame_information_area_{}".format(property)].setObjectName("CContextFrame_information_area_{}".format(property))
+                self.contextFrameDict["CContextFrame_information_area_{}".format(property)].inheritSelector = False
+                self.contextFrameDict["CContextFrame_information_area_{}".format(property)].selector = self.current_selector
 
                 # vertical layout of the information area
                 self.layoutDict["vertical_layout_tab_information_area_{}".format(property)] = QVBoxLayout(self.contextFrameDict["CContextFrame_information_area_{}".format(property)])
@@ -248,7 +259,7 @@ class MyDisplay(CDisplay):
                 self.labelDict["{}_{}".format(property, "title_fields")].setMinimumSize(QSize(0, 30))
                 self.labelDict["{}_{}".format(property, "title_fields")].setAlignment(Qt.AlignCenter)
                 self.labelDict["{}_{}".format(property, "title_fields")].setText("{}".format("Fields"))
-                self.labelDict["{}_{}".format(property, "title_fields")].setStyleSheet("background-color: rgb(220, 220, 220);")
+                self.labelDict["{}_{}".format(property, "title_fields")].setStyleSheet("background-color: rgb(210, 210, 210);")
                 self.layoutDict["grid_layout_tab_information_area_{}".format(property)].addWidget(self.labelDict["{}_{}".format(property, "title_fields")], row, column, 1, 1)
 
                 # set values label (column == 1)
@@ -258,7 +269,7 @@ class MyDisplay(CDisplay):
                 self.labelDict["{}_{}".format(property, "title_values")].setMinimumSize(QSize(0, 30))
                 self.labelDict["{}_{}".format(property, "title_values")].setAlignment(Qt.AlignCenter)
                 self.labelDict["{}_{}".format(property, "title_values")].setText("{}".format("Values"))
-                self.labelDict["{}_{}".format(property, "title_values")].setStyleSheet("background-color: rgb(220, 220, 220);")
+                self.labelDict["{}_{}".format(property, "title_values")].setStyleSheet("background-color: rgb(210, 210, 210);")
                 self.layoutDict["grid_layout_tab_information_area_{}".format(property)].addWidget(self.labelDict["{}_{}".format(property, "title_values")], row, column, 1, 1)
 
                 # add the labels to the table
@@ -296,18 +307,37 @@ class MyDisplay(CDisplay):
                         # set the command
                         command = self.command_list[index_command]
 
+                        # context frame and layout of the command button (column == 0)
+                        self.contextFrameDict["CContextFrame_command_button_column_0_{}_{}".format(property, command)] = CContextFrame(self.frameDict["frame_information_area_{}".format(property)])
+                        self.contextFrameDict["CContextFrame_command_button_column_0_{}_{}".format(property, command)].setObjectName("CContextFrame_command_button_column_0_{}_{}".format(property, command))
+                        self.contextFrameDict["CContextFrame_command_button_column_0_{}_{}".format(property, command)].inheritSelector = False
+                        self.contextFrameDict["CContextFrame_command_button_column_0_{}_{}".format(property, command)].selector = ""
+                        self.layoutDict["layout_command_button_{}".format(property, command)] = QVBoxLayout(self.contextFrameDict["CContextFrame_command_button_column_0_{}_{}".format(property, command)])
+                        self.layoutDict["layout_command_button_{}".format(property, command)].setObjectName("layout_command_button_{}".format(property, command))
+                        self.layoutDict["layout_command_button_{}".format(property, command)].setContentsMargins(0, 0, 0, 0)
+
                         # set label (column == 0)
                         column = 0
-                        self.labelDict["{}_{}".format(property, command)] = QLabel(self.frameDict["frame_information_area_{}".format(property)])
+                        self.labelDict["{}_{}".format(property, command)] = QLabel(self.contextFrameDict["CContextFrame_command_button_column_0_{}_{}".format(property, command)])
                         self.labelDict["{}_{}".format(property, command)].setObjectName("label_{}_{}".format(property, command))
                         self.labelDict["{}_{}".format(property, command)].setMinimumSize(QSize(0, 30))
                         self.labelDict["{}_{}".format(property, command)].setAlignment(Qt.AlignCenter)
                         self.labelDict["{}_{}".format(property, command)].setText("{}".format(command))
-                        self.layoutDict["grid_layout_tab_information_area_{}".format(property)].addWidget(self.labelDict["{}_{}".format(property, command)], row, column, 1, 1)
+                        self.layoutDict["layout_command_button_{}".format(property, command)].addWidget(self.labelDict["{}_{}".format(property, command)])
+                        self.layoutDict["grid_layout_tab_information_area_{}".format(property)].addWidget(self.contextFrameDict["CContextFrame_command_button_column_0_{}_{}".format(property, command)], row, column, 1, 1)
+
+                        # context frame and layout of the command button (column == 1)
+                        self.contextFrameDict["CContextFrame_command_button_column_1_{}_{}".format(property, command)] = CContextFrame(self.frameDict["frame_information_area_{}".format(property)])
+                        self.contextFrameDict["CContextFrame_command_button_column_1_{}_{}".format(property, command)].setObjectName("CContextFrame_command_button_column_1_{}_{}".format(property, command))
+                        self.contextFrameDict["CContextFrame_command_button_column_1_{}_{}".format(property, command)].inheritSelector = False
+                        self.contextFrameDict["CContextFrame_command_button_column_1_{}_{}".format(property, command)].selector = ""
+                        self.layoutDict["layout_command_button_{}".format(property, command)] = QVBoxLayout(self.contextFrameDict["CContextFrame_command_button_column_1_{}_{}".format(property, command)])
+                        self.layoutDict["layout_command_button_{}".format(property, command)].setObjectName("layout_command_button_{}".format(property, command))
+                        self.layoutDict["layout_command_button_{}".format(property, command)].setContentsMargins(0, 0, 0, 0)
 
                         # set ccommandbutton (column == 1)
                         column = 1
-                        self.commandButtonDict["{}_{}".format(property, command)] = CCommandButton(self.frameDict["frame_information_area_{}".format(property)])
+                        self.commandButtonDict["{}_{}".format(property, command)] = CCommandButton(self.contextFrameDict["CContextFrame_command_button_column_0_{}_{}".format(property, command)])
                         self.commandButtonDict["{}_{}".format(property, command)].setObjectName("ccommandbutton_{}_{}".format(property, command))
                         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
                         sizePolicy.setHorizontalStretch(0)
@@ -318,18 +348,55 @@ class MyDisplay(CDisplay):
                         self.commandButtonDict["{}_{}".format(property, command)].setIcon(QIcon("../icons/command.png"))
                         self.commandButtonDict["{}_{}".format(property, command)].setMinimumSize(QSize(0, 30))
                         self.commandButtonDict["{}_{}".format(property, command)].channel = "{}/{}".format(self.current_device, command)
-                        self.layoutDict["grid_layout_tab_information_area_{}".format(property)].addWidget(self.commandButtonDict["{}_{}".format(property, command)], row, column, 1, 1)
+                        self.layoutDict["layout_command_button_{}".format(property, command)].addWidget(self.commandButtonDict["{}_{}".format(property, command)])
+                        self.layoutDict["grid_layout_tab_information_area_{}".format(property)].addWidget(self.contextFrameDict["CContextFrame_command_button_column_1_{}_{}".format(property, command)], row, column, 1, 1)
 
                         # get the next command
                         row += 1
 
+                # setup a frame to host the acq timestamp and cycle name header fields
+                self.frameDict["frame_for_header_data_{}".format(property)] = QFrame(self.contextFrameDict["CStaticPlot_area_{}".format(property)])
+                self.frameDict["frame_for_header_data_{}".format(property)].setObjectName("frame_for_header_data_{}".format(property))
+                self.frameDict["frame_for_header_data_{}".format(property)].setFrameShape(QFrame.NoFrame)
+                self.frameDict["frame_for_header_data_{}".format(property)].setFrameShadow(QFrame.Plain)
+
+                # setup the horizontal layout of the header frame
+                self.layoutDict["horizontal_layout_header_data_{}".format(property)] = QHBoxLayout(self.frameDict["frame_for_header_data_{}".format(property)])
+                self.layoutDict["horizontal_layout_header_data_{}".format(property)].setObjectName("horizontal_layout_header_data_{}".format(property))
+                self.layoutDict["horizontal_layout_header_data_{}".format(property)].setContentsMargins(0, 0, 0, 0)
+
+                # left spacer
+                spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+                self.layoutDict["horizontal_layout_header_data_{}".format(property)].addItem(spacerItem)
+
                 # add the acq timestamp on top of the cstaticplots
-                self.clabelDict["{}_AcqTimestamp".format(property)] = CLabel(self.frameDict["frame_information_area_{}".format(property)])
+                self.clabelDict["{}_AcqTimestamp".format(property)] = CLabel(self.frameDict["frame_for_header_data_{}".format(property)])
                 self.clabelDict["{}_AcqTimestamp".format(property)].setObjectName("{}_AcqTimestamp".format(property))
                 self.clabelDict["{}_AcqTimestamp".format(property)].setProperty("type", 2)
-                self.clabelDict["{}_AcqTimestamp".format(property)].setText("acqStamp: Null")
+                self.clabelDict["{}_AcqTimestamp".format(property)].setTextFormat(Qt.RichText)
+                self.clabelDict["{}_AcqTimestamp".format(property)].setText("<b>acqStamp:</b> Null  ")
                 self.clabelDict["{}_AcqTimestamp".format(property)].setAlignment(Qt.AlignCenter)
-                self.layoutDict["vertical_layout_tab_CStaticplot_area_{}".format(property)].addWidget(self.clabelDict["{}_AcqTimestamp".format(property)])
+                minWidth = self.clabelDict["{}_AcqTimestamp".format(property)].fontMetrics().boundingRect(self.clabelDict["{}_AcqTimestamp".format(property)].text()).width()
+                self.clabelDict["{}_AcqTimestamp".format(property)].setMinimumSize(QSize(minWidth, 0))
+                self.layoutDict["horizontal_layout_header_data_{}".format(property)].addWidget(self.clabelDict["{}_AcqTimestamp".format(property)])
+
+                # add the cycle name on top of the cstaticplots
+                self.clabelDict["{}_CycleName".format(property)] = CLabel(self.frameDict["frame_for_header_data_{}".format(property)])
+                self.clabelDict["{}_CycleName".format(property)].setObjectName("{}_CycleName".format(property))
+                self.clabelDict["{}_CycleName".format(property)].setProperty("type", 2)
+                self.clabelDict["{}_CycleName".format(property)].setTextFormat(Qt.RichText)
+                self.clabelDict["{}_CycleName".format(property)].setText("<b>cycleName:</b> Null  ")
+                self.clabelDict["{}_CycleName".format(property)].setAlignment(Qt.AlignCenter)
+                minWidth = self.clabelDict["{}_CycleName".format(property)].fontMetrics().boundingRect(self.clabelDict["{}_CycleName".format(property)].text()).width()
+                self.clabelDict["{}_CycleName".format(property)].setMinimumSize(QSize(minWidth, 0))
+                self.layoutDict["horizontal_layout_header_data_{}".format(property)].addWidget(self.clabelDict["{}_CycleName".format(property)])
+
+                # right spacer
+                spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+                self.layoutDict["horizontal_layout_header_data_{}".format(property)].addItem(spacerItem)
+
+                # add the header to the vertical CStaticplot area
+                self.layoutDict["vertical_layout_tab_CStaticplot_area_{}".format(property)].addWidget(self.frameDict["frame_for_header_data_{}".format(property)])
 
                 # add the plots
                 for field in self.field_dict["{}".format(property)]["fields_that_are_arrays"]:
@@ -369,6 +436,26 @@ class MyDisplay(CDisplay):
 
         # obtain the tab names
         self.tab_names = [self.tabWidget.tabText(tab_i) for tab_i in range(0, self.tabWidget.count())]
+
+        # disable fullscreen and flag buttons if CAPTURE_TAB is disabled
+        if CAPTURE_TAB and "dBLM.TEST" not in self.current_device:
+            self.CRelatedDisplayButton_rawBuf0.setEnabled(True)
+            self.CRelatedDisplayButton_rawBuf1.setEnabled(True)
+            self.CRelatedDisplayButton_rawBuf0_FFT.setEnabled(True)
+            self.CRelatedDisplayButton_rawBuf1_FFT.setEnabled(True)
+            self.checkBox_turns_0.setEnabled(True)
+            self.checkBox_turns_1.setEnabled(True)
+            self.checkBox_peaks_0.setEnabled(True)
+            self.checkBox_peaks_1.setEnabled(True)
+        else:
+            self.CRelatedDisplayButton_rawBuf0.setEnabled(False)
+            self.CRelatedDisplayButton_rawBuf1.setEnabled(False)
+            self.CRelatedDisplayButton_rawBuf0_FFT.setEnabled(False)
+            self.CRelatedDisplayButton_rawBuf1_FFT.setEnabled(False)
+            self.checkBox_turns_0.setEnabled(False)
+            self.checkBox_turns_1.setEnabled(False)
+            self.checkBox_peaks_0.setEnabled(False)
+            self.checkBox_peaks_1.setEnabled(False)
 
         return
 
@@ -413,9 +500,11 @@ class MyDisplay(CDisplay):
     # function that writes the device name into a txt file
     def writeDeviceIntoTxtForFullScreen(self):
 
+        # create the dir in case it does not exist
         if not os.path.exists("aux_txts"):
             os.mkdir("aux_txts")
 
+        # write the file
         with open("aux_txts/current_device.txt", "w") as f:
             f.write(str(self.current_device))
 
@@ -426,9 +515,11 @@ class MyDisplay(CDisplay):
     # function to add or remove the turn flags from the plot of rawbuf0
     def pleaseShowTurns0(self, state):
 
+        # if the button is checked
         if state == Qt.Checked:
 
-            print('turns0 button checked')
+            # clear plot and add the new flags
+            print("{} - Turns0 button checked...".format(UI_FILENAME))
             self.current_check_dict["ts0"] = True
             self.CStaticPlot_Capture_rawBuf0.clear_items()
             self.CStaticPlot_Capture_rawBuf0.addItem(self.CURVE_pydm_channel_capture_rawbuffer_0_timestamps)
@@ -437,9 +528,11 @@ class MyDisplay(CDisplay):
             self.pydm_channel_capture_rawbuffer_0.context_changed()
             self.pydm_channel_capture_rawbuffer_0_timestamps.context_changed()
 
+        # if it is not checked
         else:
 
-            print('turns0 button unchecked')
+            # remove the flags
+            print("{} - Turns0 button unchecked...".format(UI_FILENAME))
             self.current_check_dict["ts0"] = False
             self.CStaticPlot_Capture_rawBuf0.removeItem(self.CURVE_pydm_channel_capture_rawbuffer_0_timestamps)
             self.pydm_channel_capture_rawbuffer_0.context_changed()
@@ -452,9 +545,11 @@ class MyDisplay(CDisplay):
     # function to add or remove the turn flags from the plot of rawbuf1
     def pleaseShowTurns1(self, state):
 
+        # if the button is checked
         if state == Qt.Checked:
 
-            print('turns1 button checked')
+            # clear plot and add the new flags
+            print("{} - Turns1 button checked...".format(UI_FILENAME))
             self.current_check_dict["ts1"] = True
             self.CStaticPlot_Capture_rawBuf1.clear_items()
             self.CStaticPlot_Capture_rawBuf1.addItem(self.CURVE_pydm_channel_capture_rawbuffer_1_timestamps)
@@ -463,9 +558,11 @@ class MyDisplay(CDisplay):
             self.pydm_channel_capture_rawbuffer_1.context_changed()
             self.pydm_channel_capture_rawbuffer_1_timestamps.context_changed()
 
+        # if it is not checked
         else:
 
-            print('turns1 button unchecked')
+            # remove the flags
+            print("{} - Turns1 button unchecked...".format(UI_FILENAME))
             self.current_check_dict["ts1"] = False
             self.CStaticPlot_Capture_rawBuf1.removeItem(self.CURVE_pydm_channel_capture_rawbuffer_1_timestamps)
             self.pydm_channel_capture_rawbuffer_1.context_changed()
@@ -478,9 +575,11 @@ class MyDisplay(CDisplay):
     # function to add or remove the peaks from the plot of rawbuf0_FFT
     def pleaseShowPeaks0(self, state):
 
+        # if the button is checked
         if state == Qt.Checked:
 
-            print('peaks0 button checked')
+            # clear plot and add the new peaks
+            print("{} - Peaks0 button checked...".format(UI_FILENAME))
             self.current_check_dict["peaks0"] = True
             self.CStaticPlot_Capture_rawBuf0_FFT.clear_items()
             self.CStaticPlot_Capture_rawBuf0_FFT.addItem(self.CURVE_pydm_channel_capture_rawbuffer_0_FFT)
@@ -489,10 +588,11 @@ class MyDisplay(CDisplay):
             self.pydm_channel_capture_rawbuffer_0_FFT.context_changed()
             self.pydm_channel_capture_rawbuffer_0_FFT_xplots_overtones.context_changed()
 
-
+        # if it is not checked
         else:
 
-            print('peaks0 button unchecked')
+            # remove the peaks
+            print("{} - Peaks0 button unchecked...".format(UI_FILENAME))
             self.current_check_dict["peaks0"] = False
             self.CStaticPlot_Capture_rawBuf0_FFT.removeItem(
                 self.CURVE_pydm_channel_capture_rawbuffer_0_FFT_xplots_overtones)
@@ -506,9 +606,11 @@ class MyDisplay(CDisplay):
     # function to add or remove the peaks from the plot of rawbuf1_FFT
     def pleaseShowPeaks1(self, state):
 
+        # if the button is checked
         if state == Qt.Checked:
 
-            print('peaks1 button checked')
+            # clear plot and add the new peaks
+            print("{} - Peaks1 button checked...".format(UI_FILENAME))
             self.current_check_dict["peaks1"] = True
             self.CStaticPlot_Capture_rawBuf1_FFT.clear_items()
             self.CStaticPlot_Capture_rawBuf1_FFT.addItem(self.CURVE_pydm_channel_capture_rawbuffer_1_FFT)
@@ -517,10 +619,11 @@ class MyDisplay(CDisplay):
             self.pydm_channel_capture_rawbuffer_1_FFT.context_changed()
             self.pydm_channel_capture_rawbuffer_1_FFT_xplots_overtones.context_changed()
 
-
+        # if it is not checked
         else:
 
-            print('peaks1 button unchecked')
+            # remove the peaks
+            print("{} - Peaks1 button unchecked...".format(UI_FILENAME))
             self.current_check_dict["peaks1"] = False
             self.CStaticPlot_Capture_rawBuf1_FFT.removeItem(self.CURVE_pydm_channel_capture_rawbuffer_1_FFT_xplots_overtones)
             self.pydm_channel_capture_rawbuffer_1_FFT.context_changed()
@@ -541,7 +644,9 @@ class MyDisplay(CDisplay):
 
                 # set up the acq timestamp
                 self.clabelDict["{}_AcqTimestamp".format(property)].channel = "{}/{}#{}".format(self.current_device, property, "acqStamp")
-                self.clabelDict["{}_AcqTimestamp".format(property)].setValueTransformation("output(\'acqStamp: {}\'.format(new_val))")
+                self.clabelDict["{}_AcqTimestamp".format(property)].setValueTransformation("output(\'<b>acqStamp:</b> {} UTC  \'.format(new_val))")
+                self.clabelDict["{}_CycleName".format(property)].channel = "{}/{}#{}".format(self.current_device, property, "cycleName")
+                self.clabelDict["{}_CycleName".format(property)].setValueTransformation("output(\'<b>cycleName:</b> {}\'.format(new_val))")
 
                 # iterate over the non-plot fields
                 for field in self.field_dict["{}".format(property)]["fields_that_are_not_arrays"]:
@@ -587,13 +692,28 @@ class MyDisplay(CDisplay):
         self.CLabel_GeneralInformation_TurnSample.channel = self.current_device + "/" + "GeneralInformation#TurnSample"
 
         # only if CAPTURE_TAB is enabled (use this for debugging)
-        if CAPTURE_TAB:
+        if CAPTURE_TAB and "dBLM.TEST" not in self.current_device:
+
+            # set up the acqStamp and cycleName for the rabuf0
+            self.CContextFrame_acqStamp_Capture_0.inheritSelector = False
+            self.CContextFrame_acqStamp_Capture_0.selector = ""
+            self.CLabel_acqStamp_Capture_0.channel = "rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.current_device + "/" + "bufferFFT#acqStamp"
+            self.CLabel_acqStamp_Capture_0.setValueTransformation("output(\'<b>acqStamp:</b> {} UTC  \'.format(new_val))")
+            self.CLabel_cycleName_Capture_0.channel = "rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.current_device + "/" + "bufferFFT#cycleName"
+            self.CLabel_cycleName_Capture_0.setValueTransformation("output(\'<b>cycleName:</b> {}\'.format(new_val))")
+
+            # set up the acqStamp and cycleName for the rabuf1
+            self.CContextFrame_acqStamp_Capture_1.inheritSelector = False
+            self.CContextFrame_acqStamp_Capture_1.selector = ""
+            self.CLabel_acqStamp_Capture_1.channel = "rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.current_device + "/" + "bufferFFT#acqStamp"
+            self.CLabel_acqStamp_Capture_1.setValueTransformation("output(\'<b>acqStamp:</b> {} UTC  \'.format(new_val))")
+            self.CLabel_cycleName_Capture_1.channel = "rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.current_device + "/" + "bufferFFT#cycleName"
+            self.CLabel_cycleName_Capture_1.setValueTransformation("output(\'<b>cycleName:</b> {}\'.format(new_val))")
 
             # set channels for Capture tab rawBuffer0
             self.CContextFrame_CaptureTab_rawBuf0.inheritSelector = False
             self.CContextFrame_CaptureTab_rawBuf0.selector = ""
             self.CStaticPlot_Capture_rawBuf0.clear_items()
-            self.CStaticPlot_Capture_rawBuf0.addCurve(data_source = "dBLM.TEST4/Capture#rawBuf0", color=QColor("#F0E912"))
             self.CURVE_pydm_channel_capture_rawbuffer_0_timestamps = self.CStaticPlot_Capture_rawBuf0.addCurve(data_source=self.pydm_channel_capture_rawbuffer_0_timestamps, color=QColor("#F0E912"))
             self.CURVE_pydm_channel_capture_rawbuffer_0 = self.CStaticPlot_Capture_rawBuf0.addCurve(data_source = self.pydm_channel_capture_rawbuffer_0, color=QColor("#FFFFFF"))
             self.pydm_channel_capture_rawbuffer_0.context_changed()
@@ -603,7 +723,6 @@ class MyDisplay(CDisplay):
             self.CContextFrame_CaptureTab_rawBuf1.inheritSelector = False
             self.CContextFrame_CaptureTab_rawBuf1.selector = ""
             self.CStaticPlot_Capture_rawBuf1.clear_items()
-            self.CStaticPlot_Capture_rawBuf1.addCurve(data_source="dBLM.TEST4/Capture#rawBuf1", color=QColor("#F0E912"))
             self.CURVE_pydm_channel_capture_rawbuffer_1_timestamps = self.CStaticPlot_Capture_rawBuf1.addCurve(data_source=self.pydm_channel_capture_rawbuffer_1_timestamps, color=QColor("#F0E912"))
             self.CURVE_pydm_channel_capture_rawbuffer_1 = self.CStaticPlot_Capture_rawBuf1.addCurve(data_source=self.pydm_channel_capture_rawbuffer_1, color=QColor("#FFFFFF"))
             self.pydm_channel_capture_rawbuffer_1.context_changed()

@@ -23,6 +23,13 @@ import time
 ########################################################
 ########################################################
 
+# GLOBALS
+
+UI_FILENAME = "fullscreen_rawbuf1.ui"
+
+########################################################
+########################################################
+
 class MyDisplay(CDisplay):
 
     #----------------------------------------------#
@@ -30,7 +37,7 @@ class MyDisplay(CDisplay):
     # function to read the ui file
     def ui_filename(self):
 
-        return 'fullscreen_rawbuf1.ui'
+        return UI_FILENAME
 
     #----------------------------------------------#
 
@@ -44,7 +51,8 @@ class MyDisplay(CDisplay):
         # other aux variables
         self.current_flags_dict = {"1,2":True, "5,6":True}
 
-        print("Loading fullscreen_rawbuf1 file...")
+        # load the file
+        print("{} - Loading the GUI file...".format(UI_FILENAME))
         super().__init__(*args, **kwargs)
         self.setWindowTitle("rawBuf1")
 
@@ -53,9 +61,11 @@ class MyDisplay(CDisplay):
         self.pydm_channel_capture_rawbuffer_1_flags_1_2 = PyDMChannelDataSource(channel_address="rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.current_device + "/" + "bufferFFT#flags1_one_two", data_type_to_emit=CurveData, parent=self.CStaticPlot_Capture_rawBuf1)
         self.pydm_channel_capture_rawbuffer_1_timestamps = PyDMChannelDataSource(channel_address="rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.current_device + "/" + "bufferFFT#flags1_five_six", data_type_to_emit=CurveData, parent=self.CStaticPlot_Capture_rawBuf1)
 
+        # set the initial channels
         print("Setting initial channels...")
         self.setChannels()
 
+        # handle signals and slots
         print("Handling signals and slots...")
         self.bindWidgets()
 

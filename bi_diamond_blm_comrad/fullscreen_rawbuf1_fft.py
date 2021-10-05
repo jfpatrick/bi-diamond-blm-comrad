@@ -23,6 +23,13 @@ import time
 ########################################################
 ########################################################
 
+# GLOBALS
+
+UI_FILENAME = "fullscreen_rawbuf1_fft.ui"
+
+########################################################
+########################################################
+
 class MyDisplay(CDisplay):
 
     #----------------------------------------------#
@@ -30,7 +37,7 @@ class MyDisplay(CDisplay):
     # function to read the ui file
     def ui_filename(self):
 
-        return 'fullscreen_rawbuf1_fft.ui'
+        return UI_FILENAME
 
     #----------------------------------------------#
 
@@ -44,7 +51,8 @@ class MyDisplay(CDisplay):
         # other aux variables
         self.current_check_dict = {"peaks":True}
 
-        print("Loading fullscreen_rawbuf1_fft file...")
+        # load the file
+        print("{} - Loading the GUI file...".format(UI_FILENAME))
         super().__init__(*args, **kwargs)
         self.setWindowTitle("rawBuf1_FFT")
 
@@ -52,9 +60,11 @@ class MyDisplay(CDisplay):
         self.pydm_channel_capture_rawbuffer_1_FFT = PyDMChannelDataSource(channel_address="rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.current_device + "/" + "bufferFFT#rawBuffer1_FFT", data_type_to_emit=CurveData, parent=self.CStaticPlot_Capture_rawBuf1_FFT)
         self.pydm_channel_capture_rawbuffer_1_FFT_xplots_overtones = PyDMChannelDataSource(channel_address="rda3://UCAP-NODE-BI-DIAMOND-BLM/UCAP.VD." + self.current_device + "/" + "bufferFFT#peaks_freq1_xplots", data_type_to_emit=CurveData, parent=self.CStaticPlot_Capture_rawBuf1_FFT)
 
+        # set the initial channels
         print("Setting initial channels...")
         self.setChannels()
 
+        # handle signals and slots
         print("Handling signals and slots...")
         self.bindWidgets()
 

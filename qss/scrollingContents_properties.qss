@@ -1,14 +1,15 @@
 QLabel[type="1"]{
-	border: 2px solid black;
+	border: 1px solid black;
+	background-color: rgb(236, 236, 236);
 }
 
 QLabel[type="2"]{
-	border: 2px solid black;
-	background-color: rgb(220, 220, 220);
+	border: 1px solid black;
+	background-color: rgb(210, 210, 210);
 }
 
 QLineEdit{
-	border: 2px solid black;
+	border: 1px solid black;
 	background-color: white;
 }
 

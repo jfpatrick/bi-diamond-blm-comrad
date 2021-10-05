@@ -10,7 +10,7 @@
 # COMRAD AND PYQT IMPORTS
 
 from comrad import (CDisplay, PyDMChannelDataSource, CurveData, PointData, PlottingItemData, TimestampMarkerData, TimestampMarkerCollectionData, UpdateSource)
-from PyQt5.QtGui import (QIcon, QColor, QGuiApplication, QCursor, QStandardItemModel, QStandardItem)
+from PyQt5.QtGui import (QIcon, QColor, QGuiApplication, QCursor, QStandardItemModel, QStandardItem, QBrush)
 from PyQt5.QtCore import (QSize, Qt, QTimer)
 from PyQt5.QtWidgets import (QSizePolicy)
 from PyQt5.Qt import QItemSelectionModel
@@ -21,6 +21,9 @@ import connection_custom
 import sys
 import os
 from time import sleep
+import pyccda
+import pyjapc
+import jpype as jp
 
 ########################################################
 ########################################################
@@ -49,11 +52,51 @@ class MyDisplay(CDisplay):
         # aux variable for the after-fully-loaded-comrad operations
         self.is_comrad_fully_loaded = False
 
+        # import cern package for handling exceptions
+        self.cern = jp.JPackage("cern")
+
+        # setup pyccda to get the device list
+        self.pyccda_sync_api = pyccda.SyncAPI()
+
+        # the query instructions are here:
+        # https://gitlab.cern.ch/controls-configuration-service/controls-configuration-data-api/accsoft-ccs-ccda/-/blob/dev/accsoft-ccs-pyccda/generator/docs/generate_query_ref.py
+        # and the device-query-related instructions here:
+        # https://gitlab.cern.ch/controls-configuration-service/controls-configuration-data-api/accsoft-ccs-ccda/-/blob/dev/accsoft-ccs-ccda-client-domain/src/main/java/cern/accsoft/ccs/ccda/client/model/device/query/DeviceQueryField.java
+
+        # query the devices
+        self.device_list = []
+        for device in self.pyccda_sync_api.Device().search('name=="*BLMDIAMOND*"; deviceClassInfo.name=="*BLMDIAMONDVFC*"; accelerator=="SPS"'):
+            self.device_list.append(device.name)
+
+        # add the test device
+        if not "dBLM.TEST4" in self.device_list:
+            self.device_list.append("dBLM.TEST4")
+
+        # order the device list
+        self.device_list.sort()
+
         # set current device
-        self.current_device = "SP.BA1.BLMDIAMOND.2"
+        self.current_device = ""
 
         # set the current window
         self.current_window = "premain"
+
+        # set current selector
+        my_device = "SPS.USER.SFTPRO1"
+        if "dBLM.TEST" not in self.current_device:
+            self.current_selector = my_device
+        else:
+            self.current_selector = ""
+
+        # create japc object
+        # self.japc = pyjapc.PyJapc(incaAcceleratorName = None)  # use this line when launching the main application
+        self.japc = pyjapc.PyJapc() # use this line when launching the module for debugging
+
+        # set japc selector
+        self.japc.setSelector(self.current_selector)
+
+        # get the devices that work
+        self.getWorkingDevices()
 
         # load the gui and set the title,
         print("{} - Loading the GUI file...".format(UI_FILENAME))
@@ -125,14 +168,55 @@ class MyDisplay(CDisplay):
 
     #----------------------------------------------#
 
+    # function that checks which devices are properly working and which are not
+    def getWorkingDevices(self):
+
+        # declare the working devices list
+        self.working_devices = []
+
+        # save the exceptions in a dict
+        self.exception_dict = {}
+
+        # iterate over the devices
+        for device in self.device_list:
+
+            # print the device for logging and debugging
+            print("{} - Checking the availability of {}".format(UI_FILENAME, device))
+
+            # try out if japc returns an error or not
+            try:
+
+                # try to acquire the data from pyjapc
+                all_data_from_pyjapc = self.japc.getParam("{}/{}".format(device, "Capture"), noPyConversion=False)
+
+            # in case we get an exception, don't add the device to the working list
+            except self.cern.japc.core.ParameterException as xcp:
+
+                # ignore in case that the exception was caused by the test device
+                if str(device) != "dBLM.TEST4":
+
+                    # print the exception
+                    print("{} - Exception: cern.japc.core.ParameterException - {}".format(UI_FILENAME, xcp))
+                    print("{} - Device {} is not working...".format(UI_FILENAME, device))
+
+                    # save the exception as xcp
+                    self.exception_dict[str(device)] = xcp
+
+                    # continue to the next device
+                    continue
+
+            # append the device
+            self.working_devices.append(device)
+
+            # save the exception as empty
+            self.exception_dict[str(device)] = ""
+
+        return
+
+    #----------------------------------------------#
+
     # function that adds the items to the tree view
-    def createTreeFromDeviceList(self, device_list = ["SP.BA1.BLMDIAMOND.2", "SP.BA2.BLMDIAMOND.2", "SP.BA4.BLMDIAMOND.2", "SP.BA6.BLMDIAMOND.2", "dBLM.TEST4"]):
-
-        # save the device list
-        self.device_list = device_list
-
-        # order the device list
-        self.device_list.sort()
+    def createTreeFromDeviceList(self):
 
         # init row and column counts
         self.model.setRowCount(0)
@@ -143,8 +227,18 @@ class MyDisplay(CDisplay):
 
         # append items to the root
         for device in self.device_list:
-            itemToAppend = QStandardItem(str(device))
-            itemToAppend.setIcon(QIcon("../icons/green_tick.png"))
+
+            # define the item to append
+            itemToAppend = QStandardItem("{}".format(device))
+
+            # determine the icon (working or not)
+            if device in self.working_devices:
+                itemToAppend.setIcon(QIcon("../icons/green_tick.png"))
+            else:
+                itemToAppend.setForeground(QBrush(Qt.red, Qt.SolidPattern))
+                itemToAppend.setIcon(QIcon("../icons/red_cross.png"))
+
+            # append it to the tree
             root.appendRow(itemToAppend)
 
         # append the root to the model
@@ -187,7 +281,10 @@ class MyDisplay(CDisplay):
             self.writeDeviceIntoTxtForMainScreen()
 
             # update text label
-            self.label_device_panel.setText("DEVICE PANEL <font color=green>{}</font> : <font color=green>{}</font>".format(parent_text, self.current_device))
+            if self.current_device in self.working_devices:
+                self.label_device_panel.setText("DEVICE PANEL <font color=green>{}</font> : <font color=green>{}</font>".format(parent_text, self.current_device))
+            else:
+                self.label_device_panel.setText( "DEVICE PANEL <font color=red>{}</font> : <font color=red>{}</font>".format(parent_text, self.current_device))
 
             # open main container
             self.CEmbeddedDisplay.filename = ""
@@ -380,9 +477,13 @@ class MyDisplay(CDisplay):
         if not os.path.exists("aux_txts"):
             os.mkdir("aux_txts")
 
-        # write the file
+        # write the current device
         with open("aux_txts/current_device_premain.txt", "w") as f:
             f.write(str(self.current_device))
+
+        # write the exception of the current device
+        with open("aux_txts/exception_premain.txt", "w") as f:
+            f.write("{}\n".format(self.exception_dict[str(self.current_device)]))
 
         return
 
@@ -395,9 +496,14 @@ class MyDisplay(CDisplay):
         if not os.path.exists("aux_txts"):
             os.mkdir("aux_txts")
 
-        # write the file
+        # write the file: device_list_premain
         with open("aux_txts/device_list_premain.txt", "w") as f:
             for dev in self.device_list:
+                f.write("{}\n".format(dev))
+
+        # write the file: working_devices_premain
+        with open("aux_txts/working_devices_premain.txt", "w") as f:
+            for dev in self.working_devices:
                 f.write("{}\n".format(dev))
 
         return

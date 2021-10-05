@@ -14,13 +14,13 @@ from PyQt5.QtGui import (QIcon, QColor, QGuiApplication, QCursor, QStandardItemM
 from PyQt5.QtCore import (QSize, Qt, QRect)
 from PyQt5.QtWidgets import (QSizePolicy, QTableWidget, QTableWidgetItem, QAbstractScrollArea, QHeaderView, QScrollArea, QSpacerItem, QPushButton, QGroupBox, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QLineEdit, QDialog, QFrame, QWidget)
 import connection_custom
-import pyjapc
 
 # OTHER IMPORTS
 
 import sys
 import os
 from time import sleep
+import pyjapc
 
 ########################################################
 ########################################################
@@ -54,7 +54,7 @@ class MyDisplay(CDisplay):
         self.device_list.sort()
 
         # input the property list
-        self.field_list = ["BoardId", "FpgaStatus", "MachineId", "monitorNames"]
+        self.field_list = ["BeamMomentum", "BstShift", "BunchSample", "FpgaCompilation", "FpgaFirmware", "FpgaStatus", "TurnBc", "TurnDropped", "TurnSample"]
 
         # order the property list
         self.field_list.sort()
@@ -108,7 +108,7 @@ class MyDisplay(CDisplay):
         self.labelDict["{}_{}".format("main_widget", "title_device")].setMinimumSize(QSize(160, 32))
         self.labelDict["{}_{}".format("main_widget", "title_device")].setAlignment(Qt.AlignCenter)
         self.labelDict["{}_{}".format("main_widget", "title_device")].setText("{}".format("Device"))
-        self.labelDict["{}_{}".format("main_widget", "title_device")].setStyleSheet("background-color: rgb(220, 220, 220);")
+        self.labelDict["{}_{}".format("main_widget", "title_device")].setStyleSheet("background-color: rgb(210, 210, 210);")
         self.layoutDict["grid_layout_main_widget"].addWidget(self.labelDict["{}_{}".format("main_widget", "title_device")], row, column, 1, 1)
 
         # continue iterating for the rest of field names
@@ -121,7 +121,7 @@ class MyDisplay(CDisplay):
             self.labelDict["{}_title_{}".format("main_widget", field)].setMinimumSize(QSize(160, 32))
             self.labelDict["{}_title_{}".format("main_widget", field)].setAlignment(Qt.AlignCenter)
             self.labelDict["{}_title_{}".format("main_widget", field)].setText("{}".format(field))
-            self.labelDict["{}_title_{}".format("main_widget", field)].setStyleSheet("background-color: rgb(220, 220, 220);")
+            self.labelDict["{}_title_{}".format("main_widget", field)].setStyleSheet("background-color: rgb(210, 210, 210);")
             self.layoutDict["grid_layout_main_widget"].addWidget(self.labelDict["{}_title_{}".format("main_widget", field)], row, column, 1, 1)
 
             # go for the next column
@@ -131,49 +131,87 @@ class MyDisplay(CDisplay):
         row = 1
         for device in self.device_list:
 
-            # get the field values of the device via pyjapc
-            field_values = self.japc.getParam("{}/{}".format(device, "GeneralInformation"))
+            # if the device IS working
+            if device in self.working_devices:
 
-            # set device name (column == 0)
-            column = 0
-            self.labelDict["{}_{}".format("main_widget", device)] = QLabel(self.main_widget)
-            self.labelDict["{}_{}".format("main_widget", device)].setObjectName("label_{}_{}".format("main_widget", "title_device"))
-            self.labelDict["{}_{}".format("main_widget", device)].setMinimumSize(QSize(160, 32))
-            self.labelDict["{}_{}".format("main_widget", device)].setAlignment(Qt.AlignCenter)
-            self.labelDict["{}_{}".format("main_widget", device)].setText("{}".format(device))
-            self.layoutDict["grid_layout_main_widget"].addWidget(self.labelDict["{}_{}".format("main_widget", device)], row, column, 1, 1)
+                # get the field values of the device via pyjapc
+                field_values = self.japc.getParam("{}/{}".format(device, "GeneralInformation"))
 
-            # iterate over the rest of fields
-            column = 1
-            for field in self.field_list:
+                # set device name (column == 0)
+                column = 0
+                self.labelDict["{}_{}".format("main_widget", device)] = QLabel(self.main_widget)
+                self.labelDict["{}_{}".format("main_widget", device)].setObjectName("label_{}_{}".format("main_widget", "title_device"))
+                self.labelDict["{}_{}".format("main_widget", device)].setMinimumSize(QSize(160, 32))
+                self.labelDict["{}_{}".format("main_widget", device)].setAlignment(Qt.AlignCenter)
+                self.labelDict["{}_{}".format("main_widget", device)].setText("{}".format(device))
+                self.layoutDict["grid_layout_main_widget"].addWidget(self.labelDict["{}_{}".format("main_widget", device)], row, column, 1, 1)
 
-                # if the field is monitorNames, process the string a little bit for the sake of aesthetics
-                if field == "monitorNames":
-                    final_field_value = ""
-                    new_val = list(dict.fromkeys(field_values[field]))
-                    for i in range(0, len(new_val)):
-                        string = new_val[i]
-                        if i > 0:
-                            final_field_value = final_field_value + ", " + string
-                        else:
-                            final_field_value = string
-                    final_field_value = "  {}  ".format(final_field_value)
+                # iterate over the rest of fields
+                column = 1
+                for field in self.field_list:
 
-                # just use the default field value
-                else:
-                    final_field_value = field_values[field]
+                    # if the field is monitorNames, process the string a little bit for the sake of aesthetics
+                    if field == "monitorNames":
+                        final_field_value = ""
+                        new_val = list(dict.fromkeys(field_values[field]))
+                        for i in range(0, len(new_val)):
+                            string = new_val[i]
+                            if i > 0:
+                                final_field_value = final_field_value + ", " + string
+                            else:
+                                final_field_value = string
+                        final_field_value = "  {}  ".format(final_field_value)
 
-                # set label
-                self.labelDict["label_value_{}_{}".format("main_widget", field)] = QLabel(self.main_widget)
-                self.labelDict["label_value_{}_{}".format("main_widget", field)].setObjectName("label_value_{}_{}".format("main_widget", field))
-                self.labelDict["label_value_{}_{}".format("main_widget", field)].setAlignment(Qt.AlignCenter)
-                self.labelDict["label_value_{}_{}".format("main_widget", field)].setText("{}".format(final_field_value))
-                minWidth = self.labelDict["label_value_{}_{}".format("main_widget", field)].fontMetrics().boundingRect(self.labelDict["label_value_{}_{}".format("main_widget", field)].text()).width()
-                self.labelDict["label_value_{}_{}".format("main_widget", field)].setMinimumSize(QSize(minWidth, 32))
-                self.layoutDict["grid_layout_main_widget"].addWidget(self.labelDict["label_value_{}_{}".format("main_widget", field)], row, column, 1, 1)
+                    # just use the default field value
+                    else:
+                        final_field_value = field_values[field]
 
-                # go for the next column (field)
-                column += 1
+                    # set label
+                    self.labelDict["label_value_{}_{}".format("main_widget", field)] = QLabel(self.main_widget)
+                    self.labelDict["label_value_{}_{}".format("main_widget", field)].setObjectName("label_value_{}_{}".format("main_widget", field))
+                    self.labelDict["label_value_{}_{}".format("main_widget", field)].setAlignment(Qt.AlignCenter)
+                    self.labelDict["label_value_{}_{}".format("main_widget", field)].setText("{}".format(final_field_value))
+                    minWidth = self.labelDict["label_value_{}_{}".format("main_widget", field)].fontMetrics().boundingRect(self.labelDict["label_value_{}_{}".format("main_widget", field)].text()).width()
+                    self.labelDict["label_value_{}_{}".format("main_widget", field)].setMinimumSize(QSize(minWidth, 32))
+                    self.layoutDict["grid_layout_main_widget"].addWidget(self.labelDict["label_value_{}_{}".format("main_widget", field)], row, column, 1, 1)
+
+                    # go for the next column (field)
+                    column += 1
+
+            # if the device IS NOT working
+            else:
+
+                # set device name (column == 0)
+                column = 0
+                self.labelDict["{}_{}".format("main_widget", device)] = QLabel(self.main_widget)
+                self.labelDict["{}_{}".format("main_widget", device)].setObjectName("label_{}_{}".format("main_widget", "title_device"))
+                self.labelDict["{}_{}".format("main_widget", device)].setMinimumSize(QSize(160, 32))
+                self.labelDict["{}_{}".format("main_widget", device)].setAlignment(Qt.AlignCenter)
+                self.labelDict["{}_{}".format("main_widget", device)].setTextFormat(Qt.RichText)
+                self.labelDict["{}_{}".format("main_widget", device)].setText("<font color=red>{}</font>".format(device))
+                self.labelDict["{}_{}".format("main_widget", device)].setStyleSheet("background-color: #ffebeb;")
+                self.layoutDict["grid_layout_main_widget"].addWidget(self.labelDict["{}_{}".format("main_widget", device)], row, column, 1, 1)
+
+                # iterate over the rest of fields
+                column = 1
+                for field in self.field_list:
+
+                    # the field value is just null because the device does not work
+                    final_field_value = "Null"
+
+                    # set label
+                    self.labelDict["label_value_{}_{}".format("main_widget", field)] = QLabel(self.main_widget)
+                    self.labelDict["label_value_{}_{}".format("main_widget", field)].setObjectName("label_value_{}_{}".format("main_widget", field))
+                    self.labelDict["label_value_{}_{}".format("main_widget", field)].setAlignment(Qt.AlignCenter)
+                    self.labelDict["label_value_{}_{}".format("main_widget", field)].setTextFormat(Qt.RichText)
+                    self.labelDict["label_value_{}_{}".format("main_widget", field)].setText("<font color=red>{}</font>".format(final_field_value))
+                    self.labelDict["label_value_{}_{}".format("main_widget", field)].setStyleSheet("background-color: #ffebeb;")
+                    minWidth = self.labelDict["label_value_{}_{}".format("main_widget", field)].fontMetrics().boundingRect(self.labelDict["label_value_{}_{}".format("main_widget", field)].text()).width()
+                    self.labelDict["label_value_{}_{}".format("main_widget", field)].setMinimumSize(QSize(minWidth, 32))
+                    self.layoutDict["grid_layout_main_widget"].addWidget(self.labelDict["label_value_{}_{}".format("main_widget", field)], row, column, 1, 1)
+
+                    # go for the next column (field)
+                    column += 1
 
             # go for the next row (device)
             row += 1
@@ -206,11 +244,19 @@ class MyDisplay(CDisplay):
     # function that loads the device list from the aux txt file
     def LoadDeviceListFromTxtPremain(self):
 
+        # load the device list
         if os.path.exists("aux_txts/device_list_premain.txt"):
             with open("aux_txts/device_list_premain.txt", "r") as f:
                 self.device_list = []
                 for line in f:
                     self.device_list.append(line.strip())
+
+        # load the working devices
+        if os.path.exists("aux_txts/working_devices_premain.txt"):
+            with open("aux_txts/working_devices_premain.txt", "r") as f:
+                self.working_devices = []
+                for line in f:
+                    self.working_devices.append(line.strip())
 
         return
 

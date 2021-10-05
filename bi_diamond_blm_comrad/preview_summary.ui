@@ -54,8 +54,8 @@
         </property>
         <property name="styleSheet">
          <string notr="true">QScrollArea{
-	margin-left: 200px;
-	margin-right: 200px;
+	margin-left: 50px;
+	margin-right: 50px;
 	background-color: rgb(227, 227, 227);
 }
 
@@ -105,9 +105,9 @@ CCommandButton:pressed{
          <property name="geometry">
           <rect>
            <x>0</x>
-           <y>200</y>
-           <width>888</width>
-           <height>420</height>
+           <y>50</y>
+           <width>1188</width>
+           <height>720</height>
           </rect>
          </property>
          <property name="sizePolicy">
@@ -118,7 +118,8 @@ CCommandButton:pressed{
          </property>
          <property name="styleSheet">
           <string notr="true">QLabel{
-	border: 2px solid black;
+	border: 1px solid black;
+	background-color: rgb(236, 236, 236);
 }
 
 QGroupBox{
