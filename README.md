@@ -1,3 +1,3 @@
 # bi-diamond-blm-comrad
 
-ComRAD project for the GUIs of the BI-DIAMOND-BLM devices.
+Expert GUI for the BI-DIAMOND-BLM devices.
